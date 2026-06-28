@@ -1,0 +1,244 @@
+package com.smartschool.api.controller;
+
+import com.smartschool.api.entity.Department;
+import com.smartschool.api.entity.DepartmentHead;
+import com.smartschool.api.entity.Student;
+import com.smartschool.api.repository.DepartmentRepository;
+import com.smartschool.api.repository.DepartmentHeadRepository;
+import com.smartschool.api.repository.StudentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Admission Department APIs
+ * - Student Enrollment
+ * - ID Card Print
+ * - Student Records
+ */
+@RestController
+@RequestMapping("/api/admission")
+@CrossOrigin("*")
+public class AdmissionDepartmentController {
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private DepartmentHeadRepository departmentHeadRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    /**
+     * POST /api/admission/enroll-student
+     * Enroll a new student (Admission Department Head only)
+     */
+    @PostMapping("/enroll-student")
+    public ResponseEntity<?> enrollStudent(@RequestBody Student student, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Admission Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("ADMISSION")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied. Only Admission Department can enroll students");
+                        }});
+            }
+
+            // Verify this user is department head
+            Optional<DepartmentHead> head = departmentHeadRepository.findByDepartmentId(deptId);
+            if (head.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Unauthorized. User is not department head");
+                        }});
+            }
+
+            if (student.getSchool() == null) {
+                student.setSchool(dept.get().getSchool());
+            }
+
+            Student enrolledStudent = studentRepository.save(student);
+            return ResponseEntity.status(HttpStatus.CREATED).body(enrolledStudent);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/admission/students/{schoolId}
+     * Get all enrolled students in a school
+     */
+    @GetMapping("/students/{schoolId}")
+    public ResponseEntity<?> getEnrolledStudents(@PathVariable Long schoolId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Admission Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("ADMISSION")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied. Only Admission Department can view students");
+                        }});
+            }
+
+            List<Student> students = studentRepository.findBySchoolId(schoolId);
+            return ResponseEntity.ok(students);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/admission/student/{studentId}
+     * Get student details
+     */
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<?> getStudentDetails(@PathVariable Long studentId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Admission Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("ADMISSION")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<Student> student = studentRepository.findById(studentId);
+            if (student.isPresent()) {
+                return ResponseEntity.ok(student.get());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Student not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * PUT /api/admission/student/{studentId}
+     * Update student details
+     */
+    @PutMapping("/student/{studentId}")
+    public ResponseEntity<?> updateStudentDetails(@PathVariable Long studentId, @RequestBody Student studentDetails, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Admission Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("ADMISSION")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<Student> student = studentRepository.findById(studentId);
+            if (student.isPresent()) {
+                Student s = student.get();
+                if (studentDetails.getFirstName() != null) s.setFirstName(studentDetails.getFirstName());
+                if (studentDetails.getLastName() != null) s.setLastName(studentDetails.getLastName());
+                if (studentDetails.getEmail() != null) s.setEmail(studentDetails.getEmail());
+                if (studentDetails.getPhoneNumber() != null) s.setPhoneNumber(studentDetails.getPhoneNumber());
+                Student updated = studentRepository.save(s);
+                return ResponseEntity.ok(updated);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Student not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * POST /api/admission/print-id-card/{studentId}
+     * Generate and print ID card for student
+     */
+    @PostMapping("/print-id-card/{studentId}")
+    public ResponseEntity<?> printIdCard(@PathVariable Long studentId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Admission Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("ADMISSION")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<Student> student = studentRepository.findById(studentId);
+            if (student.isPresent()) {
+                Student s = student.get();
+                return ResponseEntity.ok(new HashMap<String, Object>() {{
+                    put("message", "ID Card generated successfully");
+                    put("studentId", s.getId());
+                    put("studentName", s.getFirstName() + " " + s.getLastName());
+                    put("schoolName", s.getSchool().getSchoolName());
+                    put("printDate", new java.util.Date());
+                    put("status", "READY_TO_PRINT");
+                }});
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Student not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/admission/dashboard/{schoolId}
+     * Admission Department Dashboard
+     */
+    @GetMapping("/dashboard/{schoolId}")
+    public ResponseEntity<?> getDashboard(@PathVariable Long schoolId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Admission Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("ADMISSION")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            List<Student> students = studentRepository.findBySchoolId(schoolId);
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("totalStudents", students.size());
+                put("recentEnrollments", students.size());
+                put("pendingApprovals", 0);
+                put("students", students);
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+}
+

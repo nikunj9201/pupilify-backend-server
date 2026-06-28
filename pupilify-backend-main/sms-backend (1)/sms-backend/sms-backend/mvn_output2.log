@@ -1,0 +1,226 @@
+﻿[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.smartschool:sms-backend:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.springframework.boot:spring-boot-starter-mail:jar -> duplicate declaration of version (?) @ line 61, column 21
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.apache.poi:poi-ooxml:jar -> duplicate declaration of version 5.2.3 @ line 83, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] --------------------< com.smartschool:sms-backend >---------------------
+[INFO] Building sms-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ sms-backend ---
+[INFO] Deleting C:\smart-school-pro\sms-backend\sms-backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ sms-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ sms-backend ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 154 source files with javac [debug release 21] to target\classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[56,27] cannot find symbol
+  symbol:   method getMarks()
+  location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[56,60] cannot find symbol
+  symbol:   method getMarks()
+  location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[56,89] cannot find symbol
+  symbol:   method getMarks()
+  location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[63,23] cannot find symbol
+  symbol:   method setStatus(java.lang.String)
+  location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[129,60] cannot find symbol
+  symbol:   method findByStudentId(java.lang.Long)
+  location: variable examResultRepository of type com.smartschool.api.repository.ExamResultRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[160,60] cannot find symbol
+  symbol:   method findByStudentId(java.lang.Long)
+  location: variable examResultRepository of type com.smartschool.api.repository.ExamResultRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[169,68] cannot find symbol
+  symbol:   method getMarks()
+  location: variable r of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[206,60] cannot find symbol
+  symbol:   method findByStudentId(java.lang.Long)
+  location: variable examResultRepository of type com.smartschool.api.repository.ExamResultRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[207,68] cannot find symbol
+  symbol:   method getMarks()
+  location: variable r of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[279,18] cannot find symbol
+  symbol:   method setStatus(java.lang.String)
+  location: variable r of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[154,35] cannot find symbol
+  symbol:   method getFirstName()
+  location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[154,89] cannot find symbol
+  symbol:   method getFirstName()
+  location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[155,35] cannot find symbol
+  symbol:   method getLastName()
+  location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[155,87] cannot find symbol
+  symbol:   method getLastName()
+  location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[157,35] cannot find symbol
+  symbol:   method getPhoneNumber()
+  location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[157,93] cannot find symbol
+  symbol:   method getPhoneNumber()
+  location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[195,41] cannot find symbol
+  symbol:   method getFirstName()
+  location: variable s of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[195,66] cannot find symbol
+  symbol:   method getLastName()
+  location: variable s of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[55,20] cannot find symbol
+  symbol:   method getBusName()
+  location: variable bus of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[55,48] cannot find symbol
+  symbol:   method getBusNumber()
+  location: variable bus of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[152,31] cannot find symbol
+  symbol:   method getBusName()
+  location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[152,77] cannot find symbol
+  symbol:   method getBusName()
+  location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[153,31] cannot find symbol
+  symbol:   method getBusNumber()
+  location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[153,81] cannot find symbol
+  symbol:   method getBusNumber()
+  location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[156,31] cannot find symbol
+  symbol:   method getDriverPhone()
+  location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[156,85] cannot find symbol
+  symbol:   method getDriverPhone()
+  location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[234,23] cannot find symbol
+  symbol:   method setAssignmentStatus(java.lang.String)
+  location: variable assignment of type com.smartschool.api.entity.StudentBusAssignment
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[261,84] cannot find symbol
+  symbol:   method findByBusId(java.lang.Long)
+  location: variable studentBusAssignmentRepository of type com.smartschool.api.repository.StudentBusAssignmentRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[290,64] cannot find symbol
+  symbol:   method findByBusId(java.lang.Long)
+  location: variable studentBusAssignmentRepository of type com.smartschool.api.repository.StudentBusAssignmentRepository
+[INFO] 29 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  12.700 s
+[INFO] Finished at: 2026-05-09T18:48:23+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project sms-backend: Compilation failure: Compilation failure: 
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[56,27] cannot find symbol
+[ERROR]   symbol:   method getMarks()
+[ERROR]   location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[56,60] cannot find symbol
+[ERROR]   symbol:   method getMarks()
+[ERROR]   location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[56,89] cannot find symbol
+[ERROR]   symbol:   method getMarks()
+[ERROR]   location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[63,23] cannot find symbol
+[ERROR]   symbol:   method setStatus(java.lang.String)
+[ERROR]   location: variable examResult of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[129,60] cannot find symbol
+[ERROR]   symbol:   method findByStudentId(java.lang.Long)
+[ERROR]   location: variable examResultRepository of type com.smartschool.api.repository.ExamResultRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[160,60] cannot find symbol
+[ERROR]   symbol:   method findByStudentId(java.lang.Long)
+[ERROR]   location: variable examResultRepository of type com.smartschool.api.repository.ExamResultRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[169,68] cannot find symbol
+[ERROR]   symbol:   method getMarks()
+[ERROR]   location: variable r of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[206,60] cannot find symbol
+[ERROR]   symbol:   method findByStudentId(java.lang.Long)
+[ERROR]   location: variable examResultRepository of type com.smartschool.api.repository.ExamResultRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[207,68] cannot find symbol
+[ERROR]   symbol:   method getMarks()
+[ERROR]   location: variable r of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/ExamDepartmentController.java:[279,18] cannot find symbol
+[ERROR]   symbol:   method setStatus(java.lang.String)
+[ERROR]   location: variable r of type com.smartschool.api.entity.ExamResult
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[154,35] cannot find symbol
+[ERROR]   symbol:   method getFirstName()
+[ERROR]   location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[154,89] cannot find symbol
+[ERROR]   symbol:   method getFirstName()
+[ERROR]   location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[155,35] cannot find symbol
+[ERROR]   symbol:   method getLastName()
+[ERROR]   location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[155,87] cannot find symbol
+[ERROR]   symbol:   method getLastName()
+[ERROR]   location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[157,35] cannot find symbol
+[ERROR]   symbol:   method getPhoneNumber()
+[ERROR]   location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[157,93] cannot find symbol
+[ERROR]   symbol:   method getPhoneNumber()
+[ERROR]   location: variable studentDetails of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[195,41] cannot find symbol
+[ERROR]   symbol:   method getFirstName()
+[ERROR]   location: variable s of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/AdmissionDepartmentController.java:[195,66] cannot find symbol
+[ERROR]   symbol:   method getLastName()
+[ERROR]   location: variable s of type com.smartschool.api.entity.Student
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[55,20] cannot find symbol
+[ERROR]   symbol:   method getBusName()
+[ERROR]   location: variable bus of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[55,48] cannot find symbol
+[ERROR]   symbol:   method getBusNumber()
+[ERROR]   location: variable bus of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[152,31] cannot find symbol
+[ERROR]   symbol:   method getBusName()
+[ERROR]   location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[152,77] cannot find symbol
+[ERROR]   symbol:   method getBusName()
+[ERROR]   location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[153,31] cannot find symbol
+[ERROR]   symbol:   method getBusNumber()
+[ERROR]   location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[153,81] cannot find symbol
+[ERROR]   symbol:   method getBusNumber()
+[ERROR]   location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[156,31] cannot find symbol
+[ERROR]   symbol:   method getDriverPhone()
+[ERROR]   location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[156,85] cannot find symbol
+[ERROR]   symbol:   method getDriverPhone()
+[ERROR]   location: variable busDetails of type com.smartschool.api.entity.Bus
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[234,23] cannot find symbol
+[ERROR]   symbol:   method setAssignmentStatus(java.lang.String)
+[ERROR]   location: variable assignment of type com.smartschool.api.entity.StudentBusAssignment
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[261,84] cannot find symbol
+[ERROR]   symbol:   method findByBusId(java.lang.Long)
+[ERROR]   location: variable studentBusAssignmentRepository of type com.smartschool.api.repository.StudentBusAssignmentRepository
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/BusDepartmentController.java:[290,64] cannot find symbol
+[ERROR]   symbol:   method findByBusId(java.lang.Long)
+[ERROR]   location: variable studentBusAssignmentRepository of type com.smartschool.api.repository.StudentBusAssignmentRepository
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

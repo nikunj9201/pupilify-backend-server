@@ -1,0 +1,204 @@
+{
+  "info": {
+    "name": "Department Login API",
+    "description": "Department login endpoints for SMS Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Department Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"departmentId\": \"1\",\n  \"password\": \"Math@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/department-login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "department-login"
+          ]
+        },
+        "description": "Login with department ID and password"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"departmentId\": \"1\",\n  \"password\": \"Math@123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/auth/department-login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "auth",
+                "department-login"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwaHlzaWNzX2RlcHRAc2Nob29sLmNvbSIsImlhdCI6MTcxNDIxNDU2MCwiZXhwIjoxNzE0MzAwOTYwfQ.abc123\",\n  \"role\": \"ROLE_ADMIN\",\n  \"userId\": 5,\n  \"departmentId\": 1,\n  \"department\": \"Mathematics Department\",\n  \"schoolId\": 1,\n  \"schoolName\": \"Delhi Public School\",\n  \"schoolLogo\": \"https://example.com/logo.png\",\n  \"academicYear\": \"2025-26\",\n  \"academicYearId\": 1,\n  \"name\": \"Mathematics Department\",\n  \"active\": true,\n  \"message\": null\n}"
+        }
+      ]
+    },
+    {
+      "name": "Department Login - Invalid Credentials",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"departmentId\": \"1\",\n  \"password\": \"WrongPassword\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/department-login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "department-login"
+          ]
+        },
+        "description": "Test with wrong password"
+      }
+    },
+    {
+      "name": "Department Login - Department Not Found",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"departmentId\": \"999\",\n  \"password\": \"Math@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/department-login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "department-login"
+          ]
+        },
+        "description": "Test with non-existent department ID"
+      }
+    },
+    {
+      "name": "Department Login - Missing Department ID",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"password\": \"Math@123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/department-login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "department-login"
+          ]
+        },
+        "description": "Test with missing department ID"
+      }
+    },
+    {
+      "name": "Use JWT Token in Subsequent Request",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{departmentToken}}",
+            "type": "text",
+            "description": "Use the token from department login response"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/some-protected-endpoint",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "some-protected-endpoint"
+          ]
+        },
+        "description": "Example: Use the JWT token from department login in subsequent requests"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "departmentToken",
+      "value": "",
+      "type": "string",
+      "description": "Paste the token from department login response here"
+    }
+  ]
+}
+

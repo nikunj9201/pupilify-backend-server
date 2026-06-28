@@ -1,0 +1,338 @@
+{
+  "info": {
+    "_postman_id": "student-update-api-collection",
+    "name": "Student Update API Collection",
+    "description": "SMS Backend - Student Update API Complete Collection with All Fields Explained",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Student Update API - Complete Guide",
+      "item": [
+        {
+          "name": "1️⃣ Update Student - BASIC (JSON Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentData",
+                  "value": "{\"phoneNo\":\"9876543210\",\"gender\":\"Male\",\"caste\":\"General\"}",
+                  "type": "text",
+                  "description": "🔴 COMPULSORY - Student data in JSON format. Only editable fields allowed."
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/update/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "update",
+                "1"
+              ]
+            },
+            "description": "Basic update - केवल JSON data के साथ files के बिना\n\n**Usage:** जब सिर्फ student की details update करनी हो, files नहीं।\n\n**Example Response (200 OK):**\n```json\n{\n  \"studentId\": 1,\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phoneNo\": \"9876543210\",\n  \"gender\": \"Male\",\n  \"caste\": \"General\"\n}\n```"
+          }
+        },
+        {
+          "name": "2️⃣ Update Student - WITH PHOTO",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentData",
+                  "value": "{\"phoneNo\":\"9876543210\",\"gender\":\"Male\",\"address\":\"123 Main Street\"}",
+                  "type": "text",
+                  "description": "🔴 COMPULSORY - Student JSON data"
+                },
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - Student's photo file (JPG/PNG)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/update/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "update",
+                "1"
+              ]
+            },
+            "description": "Photo के साथ update - student की profile photo upload करो\n\n**Upload करते समय:**\n1. Body → form-data select करो\n2. \"photo\" row में file select करो\n3. अपनी image file choose करो (JPG/PNG)\n4. Send करो\n\n**Response में file URL मिलेगा:**\n```json\n{\n  \"studentPhoto\": \"http://localhost:8080/api/admin/students/files/STU_1234567890_photo.jpg\"\n}\n```"
+          }
+        },
+        {
+          "name": "3️⃣ Update Student - ALL DOCUMENTS",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentData",
+                  "value": "{\"phoneNo\":\"9876543210\",\"gender\":\"Male\",\"fatherName\":\"Mr. John\",\"motherName\":\"Mrs. Jane\"}",
+                  "type": "text",
+                  "description": "🔴 COMPULSORY"
+                },
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - Student photo"
+                },
+                {
+                  "key": "marksheet",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - Last class marksheet"
+                },
+                {
+                  "key": "tc",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - Transfer Certificate"
+                },
+                {
+                  "key": "aadharImg",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - Aadhar card image"
+                },
+                {
+                  "key": "samagraImg",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - Samagra ID image"
+                },
+                {
+                  "key": "passbookImg",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - Bank passbook image"
+                },
+                {
+                  "key": "apaarImg",
+                  "type": "file",
+                  "src": "",
+                  "description": "🟡 OPTIONAL - APAAR card image"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/update/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "update",
+                "1"
+              ]
+            },
+            "description": "सभी documents के साथ complete update\n\n**सभी files upload करो:**\n- Student photo\n- Marksheet\n- Transfer Certificate (TC)\n- Aadhar Card\n- Samagra Card\n- Bank Passbook\n- APAAR Card\n\n**Response में सभी file URLs मिलेंगे:**\n```json\n{\n  \"studentPhoto\": \"http://localhost:8080/...\",\n  \"lastClassMarksheet\": \"http://localhost:8080/...\",\n  \"tcImage\": \"http://localhost:8080/...\",\n  \"aadharCardImage\": \"http://localhost:8080/...\",\n  \"samagraIdImage\": \"http://localhost:8080/...\",\n  \"bankPassbookImage\": \"http://localhost:8080/...\",\n  \"apaarCardImage\": \"http://localhost:8080/...\"\n}\n```"
+          }
+        },
+        {
+          "name": "4️⃣ Example: Update Phone & Father Details",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentData",
+                  "value": "{\"phoneNo\":\"9988776655\",\"fatherName\":\"Ramesh Kumar\",\"fatherContactNumber\":\"9876543210\",\"address\":\"456 Oak Avenue, Delhi\"}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/update/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "update",
+                "1"
+              ]
+            },
+            "description": "Real-world example: Phone number और father details update करना\n\n**Updated Fields:**\n- phoneNo: 9988776655\n- fatherName: Ramesh Kumar\n- fatherContactNumber: 9876543210\n- address: 456 Oak Avenue, Delhi"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 FIELDS REFERENCE GUIDE",
+      "item": [
+        {
+          "name": "🟢 EDITABLE FIELDS (Update kar sakte ho)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "1"
+              ]
+            },
+            "description": "✅ YE FIELDS UPDATE KAR SAKTE HO:\n\n**Personal Details:**\n- phoneNo (string) - Mobile number (9 digits)\n- gender (string) - Male/Female/Other\n- address (string) - Residential address\n- caste (string) - Caste information\n\n**Family Details:**\n- fatherName (string) - Father's full name\n- motherName (string) - Mother's full name\n- fatherContactNumber (string) - Father's phone (10 digits)\n\n**ID Numbers:**\n- aadharCardNo (string) - 12-digit Aadhar number\n- samagraId (string) - Samagra ID\n- rollNumber (string) - Roll number in class\n\n**Files/Documents:**\n- photo (file) - JPG/PNG image\n- marksheet (file) - Last class marksheet\n- tc (file) - Transfer Certificate\n- aadharImg (file) - Aadhar card scanned copy\n- samagraImg (file) - Samagra ID card copy\n- passbookImg (file) - Bank passbook copy\n- apaarImg (file) - APAAR card copy\n\n**JSON Format Example:**\n```json\n{\n  \"phoneNo\": \"9876543210\",\n  \"gender\": \"Male\",\n  \"address\": \"123 Main Street, Delhi\",\n  \"caste\": \"General\",\n  \"fatherName\": \"John Doe\",\n  \"motherName\": \"Jane Doe\",\n  \"fatherContactNumber\": \"9988776655\",\n  \"aadharCardNo\": \"123456789012\",\n  \"samagraId\": \"SAM123456\",\n  \"rollNumber\": \"A001\"\n}\n```"
+          }
+        },
+        {
+          "name": "🔴 NON-EDITABLE FIELDS (Update nahi kar sakte)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "1"
+              ]
+            },
+            "description": "❌ YE FIELDS UPDATE NAHI KAR SAKTE (Onboarding time set hote hain):\n\n**Core Details (Fixed):**\n- name - Student का full name (onboarding में set)\n- email - Email address (onboarding में set)\n- password - Password (onboarding में set)\n- dateOfBirth - Date of birth (onboarding में set)\n\n**School/Class (Promotion से change करते hain):**\n- schoolId - School (promotion API से change करो)\n- classId - Class (promotion API से change करो)\n- sectionId - Section (promotion API से change करो)\n- academicYear - Academic year (special API से)\n\n**Auto Generated:**\n- enrollmentId - Auto-generated (edit nahi kar sakte)\n- apaarId - Auto-generated (edit nahi kar sakte)\n- studentId - Auto-generated ID (primary key)\n\n**agar ye change karne hain toh:**\n1. Name/DOB/Email change: Contact Admin (Onboarding को redo karna padega)\n2. Class/Section change: Promotion API use करो\n3. School change: New enrollment create करो"
+          }
+        },
+        {
+          "name": "📝 JSON FIELD DESCRIPTIONS",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "1"
+              ]
+            },
+            "description": "**phoneNo** (String, Optional)\n- Format: 10 digits\n- Example: \"9876543210\"\n- Purpose: Student's contact number\n\n**gender** (String, Optional)\n- Values: \"Male\", \"Female\", \"Other\"\n- Example: \"Male\"\n- Purpose: Student's gender\n\n**address** (String, Optional)\n- Format: Any string\n- Example: \"123 Main Street, Delhi\"\n- Purpose: Residential address\n\n**caste** (String, Optional)\n- Values: \"General\", \"OBC\", \"SC\", \"ST\", etc.\n- Example: \"General\"\n- Purpose: Caste category\n\n**fatherName** (String, Optional)\n- Format: Any string\n- Example: \"Ramesh Kumar\"\n- Purpose: Father's full name\n\n**motherName** (String, Optional)\n- Format: Any string\n- Example: \"Priya Sharma\"\n- Purpose: Mother's full name\n\n**fatherContactNumber** (String, Optional)\n- Format: 10 digits\n- Example: \"9988776655\"\n- Purpose: Father's phone number\n\n**aadharCardNo** (String, Optional)\n- Format: 12 digits\n- Example: \"123456789012\"\n- Purpose: Aadhar card number\n\n**samagraId** (String, Optional)\n- Format: Alphanumeric\n- Example: \"SAM123456789\"\n- Purpose: Samagra ID from MP Government\n\n**rollNumber** (String, Optional)\n- Format: Any string\n- Example: \"A001\" or \"001\"\n- Purpose: Student's roll number in class"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚀 QUICK REFERENCE",
+      "item": [
+        {
+          "name": "COMPULSORY vs OPTIONAL - Explanation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "1"
+              ]
+            },
+            "description": "# 🟢 COMPULSORY (हमेशा देना पड़ता है)\n\n## studentData Parameter\n**Format:** JSON string\n**Required:** हाँ (हमेशा)\n**Example:**\n```json\n{\n  \"phoneNo\": \"9876543210\",\n  \"gender\": \"Male\"\n}\n```\n\n**क्यों compulsory है?**\n- API को पता चलना चाहिए कि update करना क्या है\n- भले ही empty object {} भेजो, parameter तो देना ही पड़ता है\n- बिना इसके API error देगा\n\n---\n\n# 🟡 OPTIONAL (चाहो तो दो, न चाहो तो न दो)\n\n## File Parameters\n- photo\n- marksheet\n- tc (Transfer Certificate)\n- aadharImg\n- samagraImg\n- passbookImg\n- apaarImg\n\n**क्यों optional हैं?**\n- हर बार सभी files upload करने की ज़रूरत नहीं\n- सिर्फ वो files दो जो update करने हैं\n- बाकी files unchanged रहेंगी\n\n**उदाहरण:**\n- अगर सिर्फ photo update करना है → photo दो, बाकी न दो\n- अगर सभी documents update करने हैं → सभी दो\n- अगर कोई file update नहीं करना → कोई भी file न दो\n\n---\n\n# 📝 JSON FIELDS - OPTIONAL या REQUIRED?\n\n**studentData JSON में सभी fields OPTIONAL हैं:**\n\n✅ आप ये कर सकते हो:\n```json\n{ \"phoneNo\": \"9876543210\" }  ← सिर्फ phone\n{ \"gender\": \"Male\" }  ← सिर्फ gender\n{ \"phoneNo\": \"9876543210\", \"gender\": \"Male\" }  ← दोनों\n{ }  ← खाली भी ठीक है (कुछ update नहीं)\n```\n\n❌ ये नहीं कर सकते:\n```json\n{ \"name\": \"John\" }  ← name read-only है\n{ \"schoolId\": 1 }  ← schoolId read-only है\n```\n\n---\n\n# 🎯 PRACTICAL EXAMPLES\n\n**Example 1: सिर्फ phone update करना**\n```\nstudentData: {\"phoneNo\": \"9876543210\"}\nFiles: कोई नहीं\n```\n\n**Example 2: Photo के साथ multiple fields update करना**\n```\nstudentData: {\"phoneNo\": \"9876543210\", \"gender\": \"Male\", \"address\": \"...\"}\nFiles: photo (1 file)\n```\n\n**Example 3: सभी documents के साथ complete update**\n```\nstudentData: {\"phoneNo\": \"9876543210\", \"fatherName\": \"...\", ...}\nFiles: photo, marksheet, tc, aadharImg, samagraImg, passbookImg, apaarImg (7 files)\n```\n\n---\n\n# ⚠️ IMPORTANT NOTES\n\n1. **studentData हमेशा देना पड़ता है** - भले ही empty {} भी हो\n2. **Files optional हैं** - सिर्फ वो दो जो update करने हैं\n3. **File overwrite होगी** - अगर पुरानी file है तो replace हो जाएगी\n4. **Student ID ज़रूरी है** - URL में /1 में 1 वो student का ID है\n5. **Status codes समझो:**\n   - 200 = Success ✅\n   - 400 = Bad request (wrong JSON)\n   - 404 = Student not found\n   - 500 = Server error"
+          }
+        },
+        {
+          "name": "COMMON ERRORS & SOLUTIONS",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/admin/students/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "students",
+                "1"
+              ]
+            },
+            "description": "# ❌ ERROR 1: 400 Bad Request\n\n**Error Message:** \"Invalid student data JSON - Unrecognized field\"\n\n**Cause:**\n- JSON format गलत है\n- Non-editable field add किया है (जैसे name, email)\n\n**Solution:**\n```json\n// ❌ WRONG\n{\"name\": \"John\", \"phoneNo\": \"9876543210\"}\n\n// ✅ CORRECT\n{\"phoneNo\": \"9876543210\"}\n```\n\n---\n\n# ❌ ERROR 2: 404 Not Found\n\n**Error Message:** \"Student not found with ID: 99999\"\n\n**Cause:**\n- गलत Student ID दिया है\n- वो student database में नहीं है\n\n**Solution:**\n- सही Student ID check करो\n- GET /api/admin/students endpoint से list देख\n\n---\n\n# ❌ ERROR 3: 500 Internal Server Error\n\n**Error Message:** \"File processing failed - ...\"\n\n**Cause:**\n- File upload में problem\n- Disk space issue\n- File format invalid\n\n**Solution:**\n- File size check करो (बहुत बड़ी न हो)\n- File format check करो (JPG/PNG images, PDF documents)\n- Server logs check करो\n\n---\n\n# ❌ ERROR 4: Missing studentData\n\n**Error Message:** \"Required parameter 'studentData' not found\"\n\n**Cause:**\n- studentData parameter भूल गया\n\n**Solution:**\n```\n// यह देना ही पड़ता है\nstudentData: {}\n// या\nstudentData: {\"phoneNo\": \"9876543210\"}\n```\n\n---\n\n# ❌ ERROR 5: Invalid JSON Format\n\n**Error Message:** \"Invalid JSON data for student update\"\n\n**Cause:**\n- JSON syntax गलत है\n- Quotes मिस्मैच\n\n**Solution:**\n```json\n// ❌ WRONG (single quotes)\n{'phoneNo': '9876543210'}\n\n// ✅ CORRECT (double quotes)\n{\"phoneNo\": \"9876543210\"}\n```\n\n---\n\n# ✅ SUCCESS RESPONSE: 200 OK\n\n```json\n{\n  \"studentId\": 1,\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phoneNo\": \"9876543210\",\n  \"gender\": \"Male\",\n  \"address\": \"123 Main Street\",\n  \"caste\": \"General\",\n  \"fatherName\": \"Ramesh Kumar\",\n  \"motherName\": \"Priya Sharma\",\n  \"studentPhoto\": \"http://localhost:8080/api/admin/students/files/STU_1234567890_photo.jpg\",\n  \"lastClassMarksheet\": \"http://localhost:8080/api/admin/students/files/MRK_1234567890_marksheet.pdf\",\n  \"tcImage\": null,\n  \"aadharCardImage\": null,\n  \"samagraIdImage\": null,\n  \"bankPassbookImage\": null,\n  \"apaarCardImage\": null\n}\n```\n\n**क्या देखो:**\n- सभी updated fields में नई values हैं\n- File URLs मिलेंगे (अगर file upload किया तो)\n- null वाली files mean वो upload नहीं हुई"
+          }
+        }
+      ]
+    }
+  ]
+}
+

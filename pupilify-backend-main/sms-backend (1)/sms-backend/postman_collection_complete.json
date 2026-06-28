@@ -1,0 +1,522 @@
+{
+  "info": {
+    "name": "SmartSchool - Complete API Collection",
+    "description": "Complete API collection for SmartSchool with State Manager, District Manager, and School Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": {
+      "major": 2,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "stateId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "districtId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "User Login (School Admin/Teacher/Student)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"principal@school.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "State Manager Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"state_manager@example.com\",\n  \"password\": \"statepass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/manager-login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "manager-login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "District Manager Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"district_manager@example.com\",\n  \"password\": \"districtpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/manager-login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "manager-login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. State Manager Management",
+      "item": [
+        {
+          "name": "Create State Manager",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rajesh Kumar\",\n  \"email\": \"rajesh.manager@state.com\",\n  \"password\": \"statepass123\",\n  \"stateId\": 1,\n  \"role\": \"STATE_MANAGER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/state-managers/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "state-managers", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All State Managers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/state-managers/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "state-managers", "all"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get State Manager by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/state-managers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "state-managers", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update State Manager",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rajesh Kumar Updated\",\n  \"email\": \"rajesh.updated@state.com\",\n  \"password\": \"newpass123\",\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/state-managers/update/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "state-managers", "update", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete State Manager",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/state-managers/delete/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "state-managers", "delete", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. District Manager Management",
+      "item": [
+        {
+          "name": "Create District Manager",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Singh\",\n  \"email\": \"priya.manager@district.com\",\n  \"password\": \"districtpass123\",\n  \"stateId\": 1,\n  \"districtId\": 1,\n  \"role\": \"DISTRICT_MANAGER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/district-managers/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "district-managers", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All District Managers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/district-managers/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "district-managers", "all"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get District Manager by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/district-managers/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "district-managers", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get District Managers by State",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/district-managers/state/{{stateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "district-managers", "state", "{{stateId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get District Managers by District",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/district-managers/district/{{districtId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "district-managers", "district", "{{districtId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update District Manager",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Singh Updated\",\n  \"email\": \"priya.updated@district.com\",\n  \"password\": \"newpass123\",\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/district-managers/update/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "district-managers", "update", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete District Manager",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/superadmin/district-managers/delete/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "superadmin", "district-managers", "delete", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Bus Management",
+      "item": [
+        {
+          "name": "Create Bus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registrationNo\": \"MP09AB1234\",\n  \"routeName\": \"North Route\",\n  \"monthlyFee\": 1500,\n  \"schoolId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/buses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Buses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bus with Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/buses?includeStudents=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buses"],
+              "query": [
+                {
+                  "key": "includeStudents",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Student to Bus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": 1,\n  \"boardingPoint\": \"MG Road\",\n  \"busFee\": 1500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/buses/1/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buses", "1", "students"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Principal Management",
+      "item": [
+        {
+          "name": "Create Principal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ramesh Kumar\",\n  \"email\": \"ramesh@school.com\",\n  \"schoolId\": 1,\n  \"departments\": [\"admission\", \"fees\", \"result\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/principals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "principals"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Principal Departments",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"departments\": [\"admission\", \"fees\", \"transport\", \"result\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/principals/1/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "principals", "1", "departments"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
+

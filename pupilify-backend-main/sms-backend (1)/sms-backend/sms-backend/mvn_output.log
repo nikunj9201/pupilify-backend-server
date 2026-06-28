@@ -1,0 +1,64 @@
+﻿[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.smartschool:sms-backend:jar:0.0.1-SNAPSHOT
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.springframework.boot:spring-boot-starter-mail:jar -> duplicate declaration of version (?) @ line 61, column 21
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.apache.poi:poi-ooxml:jar -> duplicate declaration of version 5.2.3 @ line 83, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] --------------------< com.smartschool:sms-backend >---------------------
+[INFO] Building sms-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ sms-backend ---
+[INFO] Deleting C:\smart-school-pro\sms-backend\sms-backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ sms-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ sms-backend ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 153 source files with javac [debug release 21] to target\classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/DepartmentController.java:[7,35] cannot find symbol
+  symbol:   class DepartmentService
+  location: package com.smartschool.api.service
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/DepartmentController.java:[24,13] cannot find symbol
+  symbol:   class DepartmentService
+  location: class com.smartschool.api.controller.DepartmentController
+[INFO] 2 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  10.590 s
+[INFO] Finished at: 2026-05-09T18:47:37+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project sms-backend: Compilation failure: Compilation failure: 
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/DepartmentController.java:[7,35] cannot find symbol
+[ERROR]   symbol:   class DepartmentService
+[ERROR]   location: package com.smartschool.api.service
+[ERROR] /C:/smart-school-pro/sms-backend/sms-backend/src/main/java/com/smartschool/api/controller/DepartmentController.java:[24,13] cannot find symbol
+[ERROR]   symbol:   class DepartmentService
+[ERROR]   location: class com.smartschool.api.controller.DepartmentController
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

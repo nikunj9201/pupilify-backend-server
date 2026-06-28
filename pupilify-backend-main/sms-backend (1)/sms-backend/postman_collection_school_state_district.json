@@ -1,0 +1,184 @@
+{
+  "info": {
+    "_postman_id": "smartschool-api-v2",
+    "name": "SmartSchool API - State District School Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. AUTH - Login",
+      "item": [
+        {
+          "name": "Login as Super Admin",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"your_superadmin@example.com\",\n  \"password\": \"your_password\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. STATE - Create & Manage",
+      "item": [
+        {
+          "name": "Create State",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Madhya Pradesh\",\n  \"code\": \"MP\"\n}"},
+            "url": {"raw": "{{baseUrl}}/api/superadmin/state/create", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "state", "create"]}
+          }
+        },
+        {
+          "name": "Get All States",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/state/all", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "state", "all"]}
+          }
+        },
+        {
+          "name": "Get State By ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/state/1", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "state", "1"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. DISTRICT - Create & Manage",
+      "item": [
+        {
+          "name": "Create District",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Indore\",\n  \"code\": \"IND\",\n  \"state\": { \"id\": 1 }\n}"},
+            "url": {"raw": "{{baseUrl}}/api/district/create", "host": ["{{baseUrl}}"], "path": ["api", "district", "create"]}
+          }
+        },
+        {
+          "name": "Get All Districts",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/district/all", "host": ["{{baseUrl}}"], "path": ["api", "district", "all"]}
+          }
+        },
+        {
+          "name": "Get Districts by State",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/district/all?stateId=1", "host": ["{{baseUrl}}"], "path": ["api", "district", "all"], "query": [{"key": "stateId", "value": "1"}]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. SCHOOL - Create & Link State/District",
+      "item": [
+        {
+          "name": "Create School",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "schoolData", "value": "{\"schoolName\": \"ABC Public School\", \"mailId\": \"abc@school.com\", \"password\": \"Pass@123\", \"address\": \"Delhi\", \"phoneNumber\": \"9876543210\"}", "type": "text"},
+                {"key": "logo", "value": "/path/to/logo.png", "type": "file", "disabled": true},
+                {"key": "currentYearId", "value": "1", "type": "text", "disabled": true}
+              ]
+            },
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/add", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "add"]}
+          }
+        },
+        {
+          "name": "Assign State to School",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/1/assign-state/1", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "1", "assign-state", "1"]}
+          }
+        },
+        {
+          "name": "Assign District to School",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/1/assign-district/1", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "1", "assign-district", "1"]}
+          }
+        },
+        {
+          "name": "Get All Schools",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/all", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "all"]}
+          }
+        },
+        {
+          "name": "Get Schools by State (For State Manager)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/by-state/1", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "by-state", "1"]}
+          }
+        },
+        {
+          "name": "Get Schools by District (For District Manager)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/by-district/1", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "by-district", "1"]}
+          }
+        },
+        {
+          "name": "Get School By ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/1", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "1"]}
+          }
+        },
+        {
+          "name": "Update School",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "schoolData", "value": "{\"schoolName\": \"ABC Public School Updated\", \"mailId\": \"abc@school.com\", \"address\": \"New Delhi\", \"phoneNumber\": \"9876543211\"}", "type": "text"},
+                {"key": "logo", "value": "/path/to/new_logo.png", "type": "file", "disabled": true}
+              ]
+            },
+            "url": {"raw": "{{baseUrl}}/api/superadmin/schools/update/1", "host": ["{{baseUrl}}"], "path": ["api", "superadmin", "schools", "update", "1"]}
+          }
+        }
+      ]
+    }
+  ]
+}
+

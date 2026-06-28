@@ -1,0 +1,342 @@
+package com.smartschool.api.controller;
+
+import com.smartschool.api.entity.Bus;
+import com.smartschool.api.entity.Department;
+import com.smartschool.api.entity.StudentBusAssignment;
+import com.smartschool.api.repository.BusRepository;
+import com.smartschool.api.repository.DepartmentRepository;
+import com.smartschool.api.repository.StudentBusAssignmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Bus Department APIs
+ * - Bus Management
+ * - Bus Routes
+ * - Student Bus Assignment
+ * - Bus Tracking
+ */
+@RestController
+@RequestMapping("/api/bus-dept")
+@CrossOrigin("*")
+public class BusDepartmentController {
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private BusRepository busRepository;
+
+    @Autowired
+    private StudentBusAssignmentRepository studentBusAssignmentRepository;
+
+    /**
+     * POST /api/bus-dept/add-bus
+     * Add a new bus (Bus Department only)
+     */
+    @PostMapping("/add-bus")
+    public ResponseEntity<?> addBus(@RequestBody Bus bus, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied. Only Bus Department can add buses");
+                        }});
+            }
+
+            if (bus.getBusName() == null || bus.getBusNumber() == null) {
+                return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                    put("error", "busName and busNumber are required");
+                }});
+            }
+
+            if (bus.getSchool() == null) {
+                bus.setSchool(dept.get().getSchool());
+            }
+
+            Bus savedBus = busRepository.save(bus);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedBus);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/bus-dept/buses/{schoolId}
+     * Get all buses in a school
+     */
+    @GetMapping("/buses/{schoolId}")
+    public ResponseEntity<?> getBuses(@PathVariable Long schoolId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            List<Bus> buses = busRepository.findBySchoolId(schoolId);
+            return ResponseEntity.ok(buses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/bus-dept/bus/{busId}
+     * Get bus details
+     */
+    @GetMapping("/bus/{busId}")
+    public ResponseEntity<?> getBusDetails(@PathVariable Long busId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<Bus> bus = busRepository.findById(busId);
+            if (bus.isPresent()) {
+                return ResponseEntity.ok(bus.get());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Bus not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * PUT /api/bus-dept/bus/{busId}
+     * Update bus details
+     */
+    @PutMapping("/bus/{busId}")
+    public ResponseEntity<?> updateBus(@PathVariable Long busId, @RequestBody Bus busDetails, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<Bus> bus = busRepository.findById(busId);
+            if (bus.isPresent()) {
+                Bus b = bus.get();
+                if (busDetails.getBusName() != null) b.setBusName(busDetails.getBusName());
+                if (busDetails.getBusNumber() != null) b.setBusNumber(busDetails.getBusNumber());
+                if (busDetails.getCapacity() != null) b.setCapacity(busDetails.getCapacity());
+                if (busDetails.getDriverName() != null) b.setDriverName(busDetails.getDriverName());
+                if (busDetails.getDriverPhone() != null) b.setDriverPhone(busDetails.getDriverPhone());
+                Bus updated = busRepository.save(b);
+                return ResponseEntity.ok(updated);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Bus not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * DELETE /api/bus-dept/bus/{busId}
+     * Delete bus
+     */
+    @DeleteMapping("/bus/{busId}")
+    public ResponseEntity<?> deleteBus(@PathVariable Long busId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            if (busRepository.existsById(busId)) {
+                busRepository.deleteById(busId);
+                return ResponseEntity.ok(new HashMap<String, String>() {{
+                    put("message", "Bus deleted successfully");
+                }});
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Bus not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * POST /api/bus-dept/assign-student/{studentId}/{busId}
+     * Assign student to bus
+     */
+    @PostMapping("/assign-student/{studentId}/{busId}")
+    public ResponseEntity<?> assignStudentToBus(@PathVariable Long studentId, @PathVariable Long busId,
+                                                 @RequestBody StudentBusAssignment assignment,
+                                                 @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<Bus> bus = busRepository.findById(busId);
+            if (bus.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Bus not found");
+                        }});
+            }
+
+            assignment.setStudent(null); // Will be set through service
+            assignment.setBus(bus.get());
+            assignment.setAssignmentStatus("ACTIVE");
+            StudentBusAssignment saved = studentBusAssignmentRepository.save(assignment);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/bus-dept/bus-students/{busId}
+     * Get all students assigned to a bus
+     */
+    @GetMapping("/bus-students/{busId}")
+    public ResponseEntity<?> getBusStudents(@PathVariable Long busId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            List<StudentBusAssignment> assignments = studentBusAssignmentRepository.findByBusId(busId);
+            return ResponseEntity.ok(assignments);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/bus-dept/dashboard/{schoolId}
+     * Bus Department Dashboard
+     */
+    @GetMapping("/dashboard/{schoolId}")
+    public ResponseEntity<?> getDashboard(@PathVariable Long schoolId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            List<Bus> buses = busRepository.findBySchoolId(schoolId);
+            int totalStudents = 0;
+            for (Bus bus : buses) {
+                totalStudents += studentBusAssignmentRepository.findByBusId(bus.getId()).size();
+            }
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("totalBuses", buses.size());
+                put("totalStudents", totalStudents);
+                put("activeBuses", buses.size());
+                put("buses", buses);
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * POST /api/bus-dept/unassign-student/{assignmentId}
+     * Remove student from bus
+     */
+    @PostMapping("/unassign-student/{assignmentId}")
+    public ResponseEntity<?> unassignStudent(@PathVariable Long assignmentId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Bus Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("BUS")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<StudentBusAssignment> assignment = studentBusAssignmentRepository.findById(assignmentId);
+            if (assignment.isPresent()) {
+                studentBusAssignmentRepository.deleteById(assignmentId);
+                return ResponseEntity.ok(new HashMap<String, String>() {{
+                    put("message", "Student unassigned successfully");
+                }});
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Assignment not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+}
+

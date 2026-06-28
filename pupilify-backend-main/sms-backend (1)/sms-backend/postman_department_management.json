@@ -1,0 +1,712 @@
+{
+  "info": {
+    "name": "Department Management API",
+    "description": "Complete Department Management System APIs (Admission, Exam, Bus)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Department Management",
+      "item": [
+        {
+          "name": "Create Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"school\": {\n    \"id\": 1\n  },\n  \"deptName\": \"Admission Department\",\n  \"deptType\": \"ADMISSION\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/departments/create",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get Departments by School",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/school/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "school", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Department by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Department by Type",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/type/1/ADMISSION",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "type", "1", "ADMISSION"]
+            }
+          }
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deptName\": \"Updated Admission Department\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Department Head Management",
+      "item": [
+        {
+          "name": "Assign Department Head",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"id\": 5\n  },\n  \"department\": {\n    \"id\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1/assign-head",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1", "assign-head"]
+            }
+          }
+        },
+        {
+          "name": "Get Department Head",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1/head",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1", "head"]
+            }
+          }
+        },
+        {
+          "name": "Remove Department Head",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1/head",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1", "head"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Permission Management",
+      "item": [
+        {
+          "name": "Add Permission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissionName\": \"STUDENT_ENROLLMENT\",\n  \"description\": \"Permission to enroll students\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1/permissions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1", "permissions"]
+            }
+          }
+        },
+        {
+          "name": "Get All Permissions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1/permissions",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1", "permissions"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Permissions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/1/permissions/active",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "1", "permissions", "active"]
+            }
+          }
+        },
+        {
+          "name": "Update Permission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/departments/permissions/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "permissions", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Permission",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8080/api/departments/permissions/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "departments", "permissions", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Department Login",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admissionhead@school.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/department-login/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "department-login", "login"]
+            }
+          }
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <token>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/department-login/verify-token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "department-login", "verify-token"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "1"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/department-login/me",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "department-login", "me"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer <token>"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/department-login/logout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "department-login", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admission Department",
+      "item": [
+        {
+          "name": "Enroll Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Department-Id",
+                "value": "1"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Rajesh\",\n  \"lastName\": \"Kumar\",\n  \"email\": \"rajesh@email.com\",\n  \"phoneNumber\": \"9876543210\",\n  \"school\": {\n    \"id\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admission/enroll-student",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admission", "enroll-student"]
+            }
+          }
+        },
+        {
+          "name": "Get Enrolled Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "1"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/admission/students/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admission", "students", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Student Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "1"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/admission/student/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admission", "student", "1"]
+            }
+          }
+        },
+        {
+          "name": "Print ID Card",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "1"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/admission/print-id-card/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admission", "print-id-card", "1"]
+            }
+          }
+        },
+        {
+          "name": "Admission Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "1"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/admission/dashboard/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "admission", "dashboard", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exam Department",
+      "item": [
+        {
+          "name": "Upload Marks",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Department-Id",
+                "value": "2"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": {\n    \"id\": 1\n  },\n  \"examSchedule\": {\n    \"id\": 1\n  },\n  \"marks\": 85,\n  \"subject\": \"Mathematics\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/exam/upload-marks",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "exam", "upload-marks"]
+            }
+          }
+        },
+        {
+          "name": "Get Exam Marks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "2"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/exam/marks/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "exam", "marks", "1"]
+            }
+          }
+        },
+        {
+          "name": "Verify Marks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "2"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/exam/verify-marks/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "exam", "verify-marks", "1"]
+            }
+          }
+        },
+        {
+          "name": "Print Result",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "2"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/exam/print-result/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "exam", "print-result", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Report Card",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "2"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/exam/report-card/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "exam", "report-card", "1"]
+            }
+          }
+        },
+        {
+          "name": "Exam Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "2"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/exam/dashboard/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "exam", "dashboard", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bus Department",
+      "item": [
+        {
+          "name": "Add Bus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Department-Id",
+                "value": "3"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"busName\": \"Bus 1\",\n  \"busNumber\": \"UP-01-AB-0001\",\n  \"capacity\": 50,\n  \"driverName\": \"Mr. Singh\",\n  \"driverPhone\": \"9876543210\",\n  \"school\": {\n    \"id\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/bus-dept/add-bus",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "bus-dept", "add-bus"]
+            }
+          }
+        },
+        {
+          "name": "Get All Buses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "3"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/bus-dept/buses/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "bus-dept", "buses", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Bus Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "3"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/bus-dept/bus/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "bus-dept", "bus", "1"]
+            }
+          }
+        },
+        {
+          "name": "Assign Student to Bus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Department-Id",
+                "value": "3"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student\": {\n    \"id\": 1\n  },\n  \"bus\": {\n    \"id\": 1\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/bus-dept/assign-student/1/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "bus-dept", "assign-student", "1", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Bus Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "3"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/bus-dept/bus-students/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "bus-dept", "bus-students", "1"]
+            }
+          }
+        },
+        {
+          "name": "Bus Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Department-Id",
+                "value": "3"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/bus-dept/dashboard/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "bus-dept", "dashboard", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

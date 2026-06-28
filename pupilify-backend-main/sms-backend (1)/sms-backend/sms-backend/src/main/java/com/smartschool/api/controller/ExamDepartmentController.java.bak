@@ -1,0 +1,295 @@
+package com.smartschool.api.controller;
+
+import com.smartschool.api.entity.Department;
+import com.smartschool.api.entity.DepartmentHead;
+import com.smartschool.api.entity.ExamResult;
+import com.smartschool.api.repository.DepartmentRepository;
+import com.smartschool.api.repository.DepartmentHeadRepository;
+import com.smartschool.api.repository.ExamResultRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Exam Department APIs
+ * - Upload Marks (Teacher)
+ * - View/Verify Marks (Department Head)
+ * - Print Results
+ * - Generate Report Cards
+ */
+@RestController
+@RequestMapping("/api/exam")
+@CrossOrigin("*")
+public class ExamDepartmentController {
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private DepartmentHeadRepository departmentHeadRepository;
+
+    @Autowired
+    private ExamResultRepository examResultRepository;
+
+    /**
+     * POST /api/exam/upload-marks
+     * Teacher uploads marks for exam
+     * Only Exam Department can upload marks
+     */
+    @PostMapping("/upload-marks")
+    public ResponseEntity<?> uploadMarks(@RequestBody ExamResult examResult, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Exam Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("EXAM")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied. Only Exam Department can upload marks");
+                        }});
+            }
+
+            if (examResult.getMarks() == null || examResult.getMarks() < 0 || examResult.getMarks() > 100) {
+                return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                    put("error", "Marks must be between 0 and 100");
+                }});
+            }
+
+            // Save the marks
+            examResult.setStatus("SUBMITTED");
+            ExamResult saved = examResultRepository.save(examResult);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/exam/marks/{examId}
+     * Get all marks for an exam
+     */
+    @GetMapping("/marks/{examId}")
+    public ResponseEntity<?> getExamMarks(@PathVariable Long examId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Exam Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("EXAM")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            // This would fetch from database based on exam schedule
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("examId", examId);
+                put("marks", new java.util.ArrayList<>());
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/exam/verify-marks/{studentId}
+     * Department Head can verify and check student marks
+     */
+    @GetMapping("/verify-marks/{studentId}")
+    public ResponseEntity<?> verifyMarks(@PathVariable Long studentId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Exam Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("EXAM")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            // Get department head
+            Optional<DepartmentHead> head = departmentHeadRepository.findByDepartmentId(deptId);
+            if (head.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Unauthorized");
+                        }});
+            }
+
+            // Fetch student marks from database
+            List<ExamResult> results = examResultRepository.findByStudentId(studentId);
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("studentId", studentId);
+                put("results", results);
+                put("verifiedBy", head.get().getUser().getUsername());
+                put("verificationDate", new java.util.Date());
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * POST /api/exam/print-result/{studentId}
+     * Print result card for student
+     */
+    @PostMapping("/print-result/{studentId}")
+    public ResponseEntity<?> printResult(@PathVariable Long studentId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Exam Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("EXAM")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            List<ExamResult> results = examResultRepository.findByStudentId(studentId);
+            if (results.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "No exam results found for student");
+                        }});
+            }
+
+            // Calculate total and percentage
+            Double totalMarks = results.stream().mapToDouble(r -> r.getMarks()).sum();
+            Double percentage = (totalMarks / (results.size() * 100)) * 100;
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("message", "Result card generated successfully");
+                put("studentId", studentId);
+                put("totalMarks", totalMarks);
+                put("totalExams", results.size());
+                put("percentage", String.format("%.2f", percentage));
+                put("printDate", new java.util.Date());
+                put("status", "READY_TO_PRINT");
+                put("results", results);
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/exam/report-card/{studentId}
+     * Get student's report card
+     */
+    @GetMapping("/report-card/{studentId}")
+    public ResponseEntity<?> getReportCard(@PathVariable Long studentId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Exam Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("EXAM")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            List<ExamResult> results = examResultRepository.findByStudentId(studentId);
+            Double totalMarks = results.stream().mapToDouble(r -> r.getMarks()).sum();
+            Double percentage = (totalMarks / (results.size() * 100)) * 100;
+
+            String grade = percentage >= 90 ? "A+" : percentage >= 80 ? "A" :
+                          percentage >= 70 ? "B" : percentage >= 60 ? "C" : "D";
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("studentId", studentId);
+                put("totalMarks", totalMarks);
+                put("percentage", String.format("%.2f", percentage));
+                put("grade", grade);
+                put("totalExams", results.size());
+                put("results", results);
+                put("generatedDate", new java.util.Date());
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * GET /api/exam/dashboard/{schoolId}
+     * Exam Department Dashboard
+     */
+    @GetMapping("/dashboard/{schoolId}")
+    public ResponseEntity<?> getDashboard(@PathVariable Long schoolId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Exam Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("EXAM")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            return ResponseEntity.ok(new HashMap<String, Object>() {{
+                put("totalExams", 0);
+                put("marksUploaded", 0);
+                put("pendingMarks", 0);
+                put("resultsGenerated", 0);
+            }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+
+    /**
+     * PUT /api/exam/verify-result/{resultId}
+     * Department Head verifies exam result
+     */
+    @PutMapping("/verify-result/{resultId}")
+    public ResponseEntity<?> verifyResult(@PathVariable Long resultId, @RequestHeader("Department-Id") Long deptId) {
+        try {
+            // Verify this is Exam Department
+            Optional<Department> dept = departmentRepository.findById(deptId);
+            if (dept.isEmpty() || !dept.get().getDeptType().toString().equals("EXAM")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new HashMap<String, String>() {{
+                            put("error", "Access denied");
+                        }});
+            }
+
+            Optional<ExamResult> result = examResultRepository.findById(resultId);
+            if (result.isPresent()) {
+                ExamResult r = result.get();
+                r.setStatus("VERIFIED");
+                ExamResult verified = examResultRepository.save(r);
+                return ResponseEntity.ok(verified);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new HashMap<String, String>() {{
+                        put("error", "Result not found");
+                    }});
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new HashMap<String, String>() {{
+                        put("error", e.getMessage());
+                    }});
+        }
+    }
+}
+

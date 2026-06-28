@@ -1,0 +1,141 @@
+{
+  "info": {
+    "name": "Department Login - Enhanced Response",
+    "description": "Department login with full school details, academic year, and state/district info",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Department Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"fees@gmail.com\",\n  \"password\": \"your_password_here\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/department-login/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "department-login",
+            "login"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Success Response (Example)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"fees@gmail.com\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/department-login/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "department-login",
+                "login"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZWVzQGdtYWlsLmNvbSIsImlhdCI6MTc3OTEyMTcyNCwiZXhwIjoxNzgxNzEzNzI0fQ.jRFQdI10fT5RHguPiGPiJbwbK9SZBtoOWTj3ZvO69Mg\",\n  \"user\": {\n    \"id\": 3,\n    \"username\": \"fees@gmail.com\",\n    \"role\": \"ROLE_DEPARTMENT\"\n  },\n  \"department\": {\n    \"id\": 1,\n    \"name\": \"Fees\",\n    \"type\": \"ADMISSION\",\n    \"schoolId\": 1,\n    \"schoolName\": \"Bright\",\n    \"schoolLogo\": \"1779121631132_logo.jpg\"\n  },\n  \"school\": {\n    \"id\": 1,\n    \"name\": \"Bright\",\n    \"logo\": \"1779121631132_logo.jpg\",\n    \"mailId\": \"school@brightschool.com\",\n    \"address\": \"123 Main Street, City\",\n    \"phoneNumber\": \"+91-9876543210\",\n    \"subscriptionStatus\": \"TRIAL\",\n    \"createdAt\": \"2025-08-15T10:30:00\",\n    \"state\": {\n      \"id\": 1,\n      \"name\": \"Maharashtra\"\n    },\n    \"district\": {\n      \"id\": 1,\n      \"name\": \"Pune\"\n    }\n  },\n  \"academicYear\": {\n    \"id\": 1,\n    \"year\": \"2025-26\"\n  },\n  \"message\": \"Login successful\"\n}\n"
+        }
+      ]
+    },
+    {
+      "name": "Department Login with Invalid Credentials",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"fees@gmail.com\",\n  \"password\": \"wrong_password\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/department-login/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "department-login",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Department Login - Missing Fields",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"fees@gmail.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/department-login/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "department-login",
+            "login"
+          ]
+        }
+      }
+    }
+  ]
+}
+
