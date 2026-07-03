@@ -5,6 +5,7 @@ import com.smartschool.api.security.JwtAuthenticationFilter;
 import com.smartschool.api.security.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,6 +60,7 @@ public class SecurityConfig {
 
                         // 2. SPECIFIC PATTERNS FIRST (Must be before generic /api/admin/**)
                         // FEES APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles
+                        .requestMatchers(HttpMethod.POST, "/api/admin/fees/adjustments/add/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/admin/fees/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // ATTENDANCE APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles
                         .requestMatchers("/api/admin/attendance/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")

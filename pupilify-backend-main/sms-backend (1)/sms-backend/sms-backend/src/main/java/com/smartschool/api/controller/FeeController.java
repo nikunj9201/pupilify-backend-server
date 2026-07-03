@@ -65,53 +65,7 @@ public class FeeController {
             throw new RuntimeException("Student is not part of this school!");
         }
 
-        Long yearId = student.getAcademicYear() != null ? student.getAcademicYear().getId() : null;
-
-        if (yearId == null) {
-            throw new RuntimeException("Student ka Academic Year set nahi hai!");
-        }
-
-        FeeStructure fs = feeStructureRepository
-                .findBySchoolClassIdAndSectionIdAndAcademicYearIdAndIsActiveTrue(
-                        student.getSchoolClass().getId(),
-                        student.getSection() != null ? student.getSection().getId() : null,
-                        yearId)
-                .orElseGet(() -> feeStructureRepository
-                        .findBySchoolClassIdAndSectionIsNullAndAcademicYearIdAndIsActiveTrue(
-                                student.getSchoolClass().getId(), yearId)
-                        .orElseThrow(() -> new RuntimeException("Fee Structure not defined for this class")));
-
-        List<FeePayment> history = feePaymentRepository.findByStudentIdAndAcademicYearId(student.getId(), yearId);
-
-        Double totalPaidThisYear = history.stream()
-                .filter(p -> p.getReceiptNumber() != null && !p.getReceiptNumber().startsWith("DUE-"))
-                .mapToDouble(FeePayment::getAmountPaid).sum();
-
-        // 🚩 FEATURE ADDED: Fetching dues by Enrollment ID to persist across Academic Years
-        List<StudentFeeDue> pendingDues = studentFeeDueRepository.findByEnrollmentIdAndClearedFalse(student.getEnrollmentId());
-        Double totalOldDueRemaining = pendingDues.stream().mapToDouble(StudentFeeDue::getRemainingDue).sum();
-
-        Double currentYearTotal = fs.getTotalFees();
-        Double currentYearRemaining = currentYearTotal - totalPaidThisYear;
-
-        Map<String, Object> details = new HashMap<>();
-        details.put("studentId", student.getId());
-        details.put("enrollmentId", student.getEnrollmentId());
-        details.put("rollNumber", student.getRollNumber());
-        details.put("studentName", student.getName());
-        details.put("className", student.getSchoolClass().getClassName());
-        details.put("sectionName", student.getSection() != null ? student.getSection().getSectionName() : "N/A");
-
-        details.put("totalClassFees", currentYearTotal);
-        details.put("totalPaidThisYear", totalPaidThisYear);
-        details.put("currentYearDue", currentYearRemaining);
-        details.put("previousYearDue", totalOldDueRemaining);
-        details.put("grandTotalDue", currentYearRemaining + totalOldDueRemaining);
-
-        details.put("academicYear", fs.getAcademicYear() != null ? fs.getAcademicYear().getCurrentYear() : "N/A");
-        details.put("previousYearDues", pendingDues);
-
-        return ResponseEntity.ok(details);
+        return getFeeRecord(enrollmentId);
     }
 
     @PostMapping("/collect/{schoolId}")
@@ -145,12 +99,19 @@ public class FeeController {
                                     student.getSchoolClass().getId(), academicYearId)
                             .orElseThrow(() -> new RuntimeException("Fee Structure missing!")));
 
+            List<StudentFeeAdjustment> adjustments = studentFeeAdjustmentRepository.findByStudentId(student.getId());
+            double admissionFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.ADMISSION_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+            double penalty = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.PENALTY).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+            double extraFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.EXTRA_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+            double discount = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.DISCOUNT).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+
+            double totalFees = fs.getTotalFees() + admissionFee + penalty + extraFee - discount;
+
             List<FeePayment> history = feePaymentRepository.findByStudentIdAndAcademicYearId(student.getId(), academicYearId);
             Double alreadyPaid = history.stream()
                     .filter(p -> p.getReceiptNumber() != null && !p.getReceiptNumber().startsWith("DUE-"))
                     .mapToDouble(FeePayment::getAmountPaid).sum();
 
-            Double totalFees = fs.getTotalFees();
             Double newRemaining = totalFees - (alreadyPaid + payment.getAmountPaid());
 
             payment.setStudent(student);
@@ -172,7 +133,9 @@ public class FeeController {
             payment.setPaymentDate(LocalDate.now());
             payment.setReceiptNumber("RCP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
 
-            return ResponseEntity.ok(feePaymentRepository.save(payment));
+            FeePayment savedPayment = feePaymentRepository.save(payment);
+
+            return ResponseEntity.ok(savedPayment);
         } catch (Exception e) {
             throw new RuntimeException("Error: " + e.getMessage());
         }
@@ -204,44 +167,21 @@ public class FeeController {
         List<Map<String, Object>> report = new ArrayList<>();
         for (Student student : students) {
             try {
-                Optional<FeeStructure> fsOpt = (student.getSection() != null)
-                        ? feeStructureRepository.findBySchoolClassIdAndSectionIdAndAcademicYearIdAndIsActiveTrue(student.getSchoolClass().getId(), student.getSection().getId(), yearId)
-                        : feeStructureRepository.findBySchoolClassIdAndSectionIsNullAndAcademicYearIdAndIsActiveTrue(student.getSchoolClass().getId(), yearId);
-
-                if (fsOpt.isPresent()) {
-                    Double currentYearTotalFees = fsOpt.get().getTotalFees();
-
-                    List<FeePayment> history = feePaymentRepository.findByStudentIdAndAcademicYearId(student.getId(), yearId);
-                    Double paidThisYear = history.stream()
-                            .filter(p -> p.getReceiptNumber() != null && !p.getReceiptNumber().startsWith("DUE-"))
-                            .mapToDouble(FeePayment::getAmountPaid).sum();
-
-                    // 🚩 FEATURE ADDED: Fetching dues by Enrollment ID in report
-                    List<StudentFeeDue> oldDues = studentFeeDueRepository.findByEnrollmentIdAndClearedFalse(student.getEnrollmentId());
-                    Double remainingOldDue = oldDues.stream().mapToDouble(StudentFeeDue::getRemainingDue).sum();
-
-                    // 🚩 FIX: Get student name with proper null checks and fallback
-                    String studentName = student.getName();
-                    if (studentName == null || studentName.trim().isEmpty()) {
-                        // Fallback to User entity username (email) if Student name is empty
-                        if (student.getUser() != null && student.getUser().getUsername() != null) {
-                            studentName = student.getUser().getUsername();
-                        } else {
-                            studentName = "N/A";  // Final fallback
-                        }
-                    }
-
+                ResponseEntity<?> feeRecordResponse = getFeeRecord(student.getEnrollmentId());
+                if (feeRecordResponse.getBody() instanceof Map) {
+                    Map<String, Object> feeRecord = (Map<String, Object>) feeRecordResponse.getBody();
+                    
                     Map<String, Object> row = new HashMap<>();
                     row.put("enrollmentId", student.getEnrollmentId());
                     row.put("rollNumber", student.getRollNumber());
-                    row.put("studentName", studentName);  // 🚩 Using fixed value
+                    row.put("studentName", student.getName());
                     row.put("className", student.getSchoolClass().getClassName());
                     row.put("sectionName", student.getSection() != null ? student.getSection().getSectionName() : "N/A");
-                    row.put("currentYearFees", currentYearTotalFees);
-                    row.put("paidThisYear", paidThisYear);
-                    row.put("previousYearDue", remainingOldDue);
-                    row.put("grandTotalDue", (currentYearTotalFees - paidThisYear) + remainingOldDue);
-                    row.put("hasPreviousYearDue", remainingOldDue > 0);
+                    row.put("currentYearFees", feeRecord.get("totalFees"));
+                    row.put("paidThisYear", feeRecord.get("totalPaidThisYear"));
+                    row.put("previousYearDue", feeRecord.get("previousYearDue"));
+                    row.put("grandTotalDue", feeRecord.get("grandTotalDue"));
+                    row.put("hasPreviousYearDue", (double) feeRecord.get("previousYearDue") > 0);
 
                     report.add(row);
                 }
@@ -341,7 +281,7 @@ public class FeeController {
     // 6. STUDENT FEE ADJUSTMENTS
     // ─────────────────────────────────────────────────────────
 
-    @PostMapping("/adjustments/add/{enrollmentId}")
+    @PostMapping("/adjustments/add/{enrollmentId:.+}")
     public ResponseEntity<StudentFeeAdjustment> addFeeAdjustment(
             @PathVariable String enrollmentId,
             @RequestBody StudentFeeAdjustment adjustment) {
@@ -351,7 +291,7 @@ public class FeeController {
         return ResponseEntity.ok(studentFeeAdjustmentRepository.save(adjustment));
     }
 
-    @GetMapping("/record/{enrollmentId}")
+    @GetMapping("/record/{enrollmentId:.+}")
     public ResponseEntity<?> getFeeRecord(@PathVariable String enrollmentId) {
         Student student = studentRepository.findByEnrollmentIdAndIsActiveTrue(enrollmentId)
                 .orElseThrow(() -> new RuntimeException("Student not found with ID: " + enrollmentId));
@@ -404,5 +344,32 @@ public class FeeController {
         details.put("paymentHistory", history);
 
         return ResponseEntity.ok(details);
+    }
+
+    @PostMapping("/process-end-of-year-dues/{schoolId}/{academicYearId}")
+    @Transactional
+    public ResponseEntity<?> processEndOfYearDues(@PathVariable Long schoolId, @PathVariable Long academicYearId) {
+        List<Student> students = studentRepository.findBySchoolIdAndIsActiveTrue(schoolId);
+        AcademicYearConfig academicYear = yearRepo.findById(academicYearId).orElseThrow(() -> new RuntimeException("Academic Year not found"));
+
+        for (Student student : students) {
+            ResponseEntity<?> feeRecordResponse = getFeeRecord(student.getEnrollmentId());
+            if (feeRecordResponse.getBody() instanceof Map) {
+                Map<String, Object> feeRecord = (Map<String, Object>) feeRecordResponse.getBody();
+                double grandTotalDue = (double) feeRecord.get("grandTotalDue");
+
+                if (grandTotalDue > 0) {
+                    StudentFeeDue newDue = new StudentFeeDue();
+                    newDue.setStudent(student);
+                    newDue.setDueAmount(grandTotalDue);
+                    newDue.setRemainingDue(grandTotalDue);
+                    newDue.setFromAcademicYear(academicYear);
+                    newDue.setSchool(student.getSchool());
+                    newDue.setCleared(false);
+                    studentFeeDueRepository.save(newDue);
+                }
+            }
+        }
+        return ResponseEntity.ok("End of year due processing complete.");
     }
 }
