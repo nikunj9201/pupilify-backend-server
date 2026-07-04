@@ -3,12 +3,19 @@ package com.smartschool.api.serviceImpl;
 import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
 import com.smartschool.api.service.StudentService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -33,6 +40,72 @@ public class StudentServiceImpl implements StudentService {
 
     private String getStudentUploadDir() {
         return uploadDir + "/students/";
+    }
+
+    @Override
+    public byte[] generateStudentReportExcel(List<Student> students) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Students");
+
+        String[] headers = {
+                "Enrollment ID", "Roll Number", "Name", "Gender", "Phone No", "Email", "Address", "DOB",
+                "Father Name", "Mother Name", "Father Contact Number", "Caste", "APAAR ID", "Aadhar Card No",
+                "Samagra ID", "Family ID", "Scholar No", "Father Occupation", "Father Salary", "Postal Code",
+                "Bank Name", "Bank Account No", "IFSC Code", "Branch", "Student Photo", "Last Class Marksheet",
+                "TC Image", "Aadhar Card Image", "Samagra ID Image", "Bank Passbook Image", "APAAR Card Image",
+                "Birth Certificate", "Income Certificate", "Cast Certificate", "Domicile Certificate"
+        };
+
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+        }
+
+        int rowNum = 1;
+        for (Student student : students) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(student.getEnrollmentId());
+            row.createCell(1).setCellValue(student.getRollNumber());
+            row.createCell(2).setCellValue(student.getName());
+            row.createCell(3).setCellValue(student.getGender());
+            row.createCell(4).setCellValue(student.getPhoneNo());
+            row.createCell(5).setCellValue(student.getEmail());
+            row.createCell(6).setCellValue(student.getAddress());
+            row.createCell(7).setCellValue(student.getDob());
+            row.createCell(8).setCellValue(student.getFatherName());
+            row.createCell(9).setCellValue(student.getMotherName());
+            row.createCell(10).setCellValue(student.getFatherContactNumber());
+            row.createCell(11).setCellValue(student.getCaste());
+            row.createCell(12).setCellValue(student.getApaarId());
+            row.createCell(13).setCellValue(student.getAadharCardNo());
+            row.createCell(14).setCellValue(student.getSamagraId());
+            row.createCell(15).setCellValue(student.getFamilyId());
+            row.createCell(16).setCellValue(student.getScholarNo());
+            row.createCell(17).setCellValue(student.getFatherOccupation());
+            row.createCell(18).setCellValue(student.getFatherSalary());
+            row.createCell(19).setCellValue(student.getPostalCode());
+            row.createCell(20).setCellValue(student.getBankName());
+            row.createCell(21).setCellValue(student.getBankAccountNo());
+            row.createCell(22).setCellValue(student.getIfscCode());
+            row.createCell(23).setCellValue(student.getBranch());
+            row.createCell(24).setCellValue(student.getStudentPhoto());
+            row.createCell(25).setCellValue(student.getLastClassMarksheet());
+            row.createCell(26).setCellValue(student.getTcImage());
+            row.createCell(27).setCellValue(student.getAadharCardImage());
+            row.createCell(28).setCellValue(student.getSamagraIdImage());
+            row.createCell(29).setCellValue(student.getBankPassbookImage());
+            row.createCell(30).setCellValue(student.getApaarCardImage());
+            row.createCell(31).setCellValue(student.getBirthCertificate());
+            row.createCell(32).setCellValue(student.getIncomeCertificate());
+            row.createCell(33).setCellValue(student.getCastCertificate());
+            row.createCell(34).setCellValue(student.getDomicileCertificate());
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+        return out.toByteArray();
     }
 
     @Override

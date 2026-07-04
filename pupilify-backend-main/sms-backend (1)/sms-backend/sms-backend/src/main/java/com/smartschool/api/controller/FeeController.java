@@ -99,7 +99,7 @@ public class FeeController {
                                     student.getSchoolClass().getId(), academicYearId)
                             .orElseThrow(() -> new RuntimeException("Fee Structure missing!")));
 
-            List<StudentFeeAdjustment> adjustments = studentFeeAdjustmentRepository.findByStudentId(student.getId());
+            List<StudentFeeAdjustment> adjustments = studentFeeAdjustmentRepository.findByStudentIdAndAcademicYearIdAndIsArchivedFalse(student.getId(), academicYearId);
             double admissionFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.ADMISSION_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
             double penalty = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.PENALTY).mapToDouble(StudentFeeAdjustment::getAmount).sum();
             double extraFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.EXTRA_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
@@ -284,10 +284,14 @@ public class FeeController {
     @PostMapping("/adjustments/add/{enrollmentId:.+}")
     public ResponseEntity<StudentFeeAdjustment> addFeeAdjustment(
             @PathVariable String enrollmentId,
-            @RequestBody StudentFeeAdjustment adjustment) {
+            @RequestBody StudentFeeAdjustment adjustment,
+            @RequestParam Long academicYearId) {
         Student student = studentRepository.findByEnrollmentIdAndIsActiveTrue(enrollmentId)
                 .orElseThrow(() -> new RuntimeException("Student not found with ID: " + enrollmentId));
+        AcademicYearConfig academicYear = yearRepo.findById(academicYearId)
+                .orElseThrow(() -> new RuntimeException("Academic Year not found"));
         adjustment.setStudent(student);
+        adjustment.setAcademicYear(academicYear);
         return ResponseEntity.ok(studentFeeAdjustmentRepository.save(adjustment));
     }
 
@@ -311,7 +315,7 @@ public class FeeController {
                                 student.getSchoolClass().getId(), yearId)
                         .orElseThrow(() -> new RuntimeException("Fee Structure not defined for this class")));
 
-        List<StudentFeeAdjustment> adjustments = studentFeeAdjustmentRepository.findByStudentId(student.getId());
+        List<StudentFeeAdjustment> adjustments = studentFeeAdjustmentRepository.findByStudentIdAndAcademicYearIdAndIsArchivedFalse(student.getId(), yearId);
         double admissionFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.ADMISSION_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
         double penalty = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.PENALTY).mapToDouble(StudentFeeAdjustment::getAmount).sum();
         double extraFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.EXTRA_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
@@ -368,6 +372,12 @@ public class FeeController {
                     newDue.setCleared(false);
                     studentFeeDueRepository.save(newDue);
                 }
+
+                List<StudentFeeAdjustment> adjustmentsToArchive = studentFeeAdjustmentRepository.findByStudentIdAndAcademicYearId(student.getId(), academicYearId);
+                for (StudentFeeAdjustment adjustment : adjustmentsToArchive) {
+                    adjustment.setArchived(true);
+                }
+                studentFeeAdjustmentRepository.saveAll(adjustmentsToArchive);
             }
         }
         return ResponseEntity.ok("End of year due processing complete.");
