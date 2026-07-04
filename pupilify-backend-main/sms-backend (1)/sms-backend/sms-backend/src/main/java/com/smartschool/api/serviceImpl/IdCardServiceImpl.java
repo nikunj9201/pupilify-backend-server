@@ -24,7 +24,7 @@ public class IdCardServiceImpl implements IdCardService {
     @Autowired private SchoolRepository  schoolRepository;
     @Autowired private AcademicYearConfigRepository academicYearRepo;
 
-    @Value("${app.upload.dir:uploads/}")
+    @Value("${file.upload-dir}")
     private String uploadDir;
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -245,7 +245,7 @@ public class IdCardServiceImpl implements IdCardService {
     private String getSchoolLogoBase64(String fileName) {
         if (fileName == null || fileName.isBlank()) return "🏫";
         try {
-            java.io.File file = new java.io.File(uploadDir + "schools/" + fileName);
+            java.io.File file = new java.io.File(uploadDir + "/schools/" + fileName);
             if (file.exists()) {
                 byte[] bytes = Files.readAllBytes(file.toPath());
                 return "<img src='data:image/jpeg;base64,"
@@ -336,7 +336,7 @@ public class IdCardServiceImpl implements IdCardService {
         if (fileName == null || fileName.isBlank()) return "👤";
         try {
             java.io.File file = new java.io.File(
-                    uploadDir + (type.equals("student") ? "students/" : "teachers/") + fileName);
+                    uploadDir + "/" + (type.equals("student") ? "students/" : "teachers/") + fileName);
             if (file.exists()) {
                 byte[] bytes = Files.readAllBytes(file.toPath());
                 return "<img src='data:image/jpeg;base64,"
