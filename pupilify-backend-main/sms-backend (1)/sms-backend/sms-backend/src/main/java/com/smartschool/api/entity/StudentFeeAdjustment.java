@@ -16,7 +16,7 @@ public class StudentFeeAdjustment {
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "academic_year_id", nullable = false)
+    @JoinColumn(name = "academic_year_id", nullable = true)
     private AcademicYearConfig academicYear;
 
     @Enumerated(EnumType.STRING)
