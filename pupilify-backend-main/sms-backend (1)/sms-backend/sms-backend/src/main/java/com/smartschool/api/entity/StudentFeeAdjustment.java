@@ -15,6 +15,10 @@ public class StudentFeeAdjustment {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
+    @ManyToOne
+    @JoinColumn(name = "academic_year_id", nullable = false)
+    private AcademicYearConfig academicYear;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FeeAdjustmentType feeType;
@@ -23,6 +27,9 @@ public class StudentFeeAdjustment {
     private Double amount;
 
     private String description;
+
+    @Column(nullable = false)
+    private boolean isArchived = false;
 
     public enum FeeAdjustmentType {
         ADMISSION_FEE,
