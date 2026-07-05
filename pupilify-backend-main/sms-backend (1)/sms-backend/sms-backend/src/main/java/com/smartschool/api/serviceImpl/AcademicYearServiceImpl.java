@@ -39,6 +39,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     @Autowired private EmailService emailService;
     @Autowired private StudentFeeDueRepository studentFeeDueRepository;
     @Autowired private StudentService studentService;
+    @Autowired private StudentFeeAdjustmentRepository studentFeeAdjustmentRepository;
 
     private final String BACKUP_DIR = "uploads/backups/";
 
@@ -198,10 +199,19 @@ public class AcademicYearServiceImpl implements AcademicYearService {
 
                 if (fsOpt.isEmpty()) continue;
 
-                Double totalFees = fsOpt.get().getTotalFees();
-                List<FeePayment> payments = feePaymentRepository.findByStudentIdOrderByPaymentDateDesc(student.getId());
+                double classFee = fsOpt.get().getTotalFees();
+
+                List<StudentFeeAdjustment> adjustments = studentFeeAdjustmentRepository.findByStudentIdAndAcademicYearIdAndIsArchivedFalse(student.getId(), oldYear.getId());
+                double admissionFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.ADMISSION_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+                double penalty = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.PENALTY).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+                double extraFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.EXTRA_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+                double discount = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.DISCOUNT).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+
+                double totalBill = classFee + admissionFee + penalty + extraFee - discount;
+
+                List<FeePayment> payments = feePaymentRepository.findByStudentIdAndAcademicYearId(student.getId(), oldYear.getId());
                 Double totalPaid = payments.stream().mapToDouble(FeePayment::getAmountPaid).sum();
-                Double dueAmount = totalFees - totalPaid;
+                Double dueAmount = totalBill - totalPaid;
 
                 if (dueAmount > 1.0) {
                     StudentFeeDue due = new StudentFeeDue();
@@ -211,7 +221,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
                     due.setToAcademicYear(newYear);
                     due.setFromYear(oldYear.getCurrentYear());
                     due.setToYear(newYear.getCurrentYear());
-                    due.setTotalFees(totalFees);
+                    due.setTotalFees(totalBill);
                     due.setTotalPaid(totalPaid);
                     due.setDueAmount(dueAmount);
                     due.setRemainingDue(dueAmount);
