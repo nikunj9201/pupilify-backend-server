@@ -80,6 +80,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/superadmin/district/**").hasAnyRole("DISTRICT_ADMIN", "STATE_ADMIN", "SUPER_ADMIN")
 
                         // 5. SUPER ADMIN APIs - Generic fallback
+                        .requestMatchers("/api/superadmin/academic-year/school/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
                         .requestMatchers("/api/superadmin/**").hasAnyRole("SUPER_ADMIN", "DISTRICT_ADMIN", "STATE_ADMIN")
 
                         // 6. District level access
