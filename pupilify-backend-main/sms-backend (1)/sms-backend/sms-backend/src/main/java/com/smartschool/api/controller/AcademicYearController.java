@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/academic-years")
+@RequestMapping("/api/academic-year")
 @CrossOrigin("*")
 public class AcademicYearController {
 
