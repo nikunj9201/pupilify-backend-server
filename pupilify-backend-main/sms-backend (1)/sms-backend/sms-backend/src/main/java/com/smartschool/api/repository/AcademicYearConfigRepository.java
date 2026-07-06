@@ -16,6 +16,8 @@ public interface AcademicYearConfigRepository
     // ✅ School ki saari year configs (history ke liye)
     List<AcademicYearConfig> findBySchoolIdOrderByIdDesc(Long schoolId);
 
+    List<AcademicYearConfig> findBySchoolId(Long schoolId);
+
     // ✅ School ka active/current year (status = ACTIVE)
     Optional<AcademicYearConfig>
     findTopBySchoolIdAndStatusOrderByIdDesc(

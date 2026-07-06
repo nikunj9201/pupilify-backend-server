@@ -6,6 +6,7 @@ import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
 import com.smartschool.api.service.AcademicYearService;
 import com.smartschool.api.service.EmailService;
+import com.smartschool.api.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -37,6 +38,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     @Autowired private ClassTeacherRepository classTeacherRepository;
     @Autowired private EmailService emailService;
     @Autowired private StudentFeeDueRepository studentFeeDueRepository;
+    @Autowired private StudentService studentService;
+    @Autowired private StudentFeeAdjustmentRepository studentFeeAdjustmentRepository;
 
     private final String BACKUP_DIR = "uploads/backups/";
 
@@ -126,7 +129,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             byte[] attendanceExcel = buildAttendanceExcel(school.getId(), oldYearId);
             byte[] feesExcel       = buildFeesExcel(school.getId(), oldYearId);
             byte[] expensesExcel   = buildExpensesExcel(school.getId(), oldYearId);
-            byte[] studentsExcel   = buildStudentsExcel(school.getId(), oldYearId);
+            List<Student> students = studentRepository.findBySchoolIdAndIsActiveTrue(schoolId);
+            byte[] studentsExcel   = studentService.generateStudentReportExcel(students);
 
             // 2. LAPTOP PE DOWNLOAD KE LIYE SERVER PE SAVE KARO
             saveExcelToLocalFolder(school.getSchoolName(), "Attendance", oldYearStr, attendanceExcel);
@@ -195,10 +199,19 @@ public class AcademicYearServiceImpl implements AcademicYearService {
 
                 if (fsOpt.isEmpty()) continue;
 
-                Double totalFees = fsOpt.get().getTotalFees();
-                List<FeePayment> payments = feePaymentRepository.findByStudentIdOrderByPaymentDateDesc(student.getId());
+                double classFee = fsOpt.get().getTotalFees();
+
+                List<StudentFeeAdjustment> adjustments = studentFeeAdjustmentRepository.findByStudentIdAndAcademicYearIdAndIsArchivedFalse(student.getId(), oldYear.getId());
+                double admissionFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.ADMISSION_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+                double penalty = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.PENALTY).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+                double extraFee = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.EXTRA_FEE).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+                double discount = adjustments.stream().filter(a -> a.getFeeType() == StudentFeeAdjustment.FeeAdjustmentType.DISCOUNT).mapToDouble(StudentFeeAdjustment::getAmount).sum();
+
+                double totalBill = classFee + admissionFee + penalty + extraFee - discount;
+
+                List<FeePayment> payments = feePaymentRepository.findByStudentIdAndAcademicYearId(student.getId(), oldYear.getId());
                 Double totalPaid = payments.stream().mapToDouble(FeePayment::getAmountPaid).sum();
-                Double dueAmount = totalFees - totalPaid;
+                Double dueAmount = totalBill - totalPaid;
 
                 if (dueAmount > 1.0) {
                     StudentFeeDue due = new StudentFeeDue();
@@ -208,7 +221,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
                     due.setToAcademicYear(newYear);
                     due.setFromYear(oldYear.getCurrentYear());
                     due.setToYear(newYear.getCurrentYear());
-                    due.setTotalFees(totalFees);
+                    due.setTotalFees(totalBill);
                     due.setTotalPaid(totalPaid);
                     due.setDueAmount(dueAmount);
                     due.setRemainingDue(dueAmount);
@@ -294,34 +307,6 @@ public class AcademicYearServiceImpl implements AcademicYearService {
                 row.createCell(1).setCellValue(safe(e.getCategory()));
                 row.createCell(2).setCellValue(e.getAmount() != null ? e.getAmount() : 0.0);
                 row.createCell(3).setCellValue(e.getDate() != null ? e.getDate().toString() : "");
-            }
-            ByteArrayOutputStream out = new ByteArrayOutputStream(); wb.write(out); return out.toByteArray();
-        } catch (Exception e) { throw new RuntimeException(e.getMessage()); }
-    }
-
-    // 🚩 FIX: Students Excel (Handling Integer rollNumber and String enrollmentId)
-    private byte[] buildStudentsExcel(Long schoolId, Long yearId) {
-        List<Student> students = studentRepository.findBySchoolIdAndIsActiveTrue(schoolId);
-        try (XSSFWorkbook wb = new XSSFWorkbook()) {
-            Sheet sheet = wb.createSheet("Students");
-            Row header = sheet.createRow(0);
-            // Dono columns add kar diye hain
-            String[] cols = {"Enrollment ID", "Roll No", "Name", "Father Name", "Class", "Section"};
-            for (int i = 0; i < cols.length; i++) header.createCell(i).setCellValue(cols[i]);
-            int rowNum = 1;
-            for (Student s : students) {
-                Row row = sheet.createRow(rowNum++);
-                // Column 0: Enrollment ID (String - safe method works here)
-                row.createCell(0).setCellValue(safe(s.getEnrollmentId()));
-
-                // Column 1: Roll No (Integer - converting to String to avoid error)
-                String rn = s.getRollNumber() != null ? String.valueOf(s.getRollNumber()) : "";
-                row.createCell(1).setCellValue(rn);
-
-                row.createCell(2).setCellValue(safe(s.getName()));
-                row.createCell(3).setCellValue(safe(s.getFatherName()));
-                row.createCell(4).setCellValue(s.getSchoolClass() != null ? safe(s.getSchoolClass().getClassName()) : "");
-                row.createCell(5).setCellValue(s.getSection() != null ? safe(s.getSection().getSectionName()) : "N/A");
             }
             ByteArrayOutputStream out = new ByteArrayOutputStream(); wb.write(out); return out.toByteArray();
         } catch (Exception e) { throw new RuntimeException(e.getMessage()); }

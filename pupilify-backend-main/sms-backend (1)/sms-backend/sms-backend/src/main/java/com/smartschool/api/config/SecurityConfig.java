@@ -5,6 +5,7 @@ import com.smartschool.api.security.JwtAuthenticationFilter;
 import com.smartschool.api.security.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,6 +60,7 @@ public class SecurityConfig {
 
                         // 2. SPECIFIC PATTERNS FIRST (Must be before generic /api/admin/**)
                         // FEES APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles
+                        .requestMatchers(HttpMethod.POST, "/api/admin/fees/adjustments/add/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/admin/fees/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // ATTENDANCE APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles
                         .requestMatchers("/api/admin/attendance/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
@@ -67,7 +69,9 @@ public class SecurityConfig {
                         // EXAMS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see exam schedule)
                         .requestMatchers("/api/admin/exams/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // RESULTS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see their results)
-                        .requestMatchers("/api/admin/results/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
+                        .requestMatchers(HttpMethod.GET, "/api/results/student/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/results/by-enrollment/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
+                        .requestMatchers("/api/admin/results/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
 
                         // 3. GENERIC ADMIN PATTERN (for other /api/admin/** endpoints)
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
@@ -77,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/superadmin/district/**").hasAnyRole("DISTRICT_ADMIN", "STATE_ADMIN", "SUPER_ADMIN")
 
                         // 5. SUPER ADMIN APIs - Generic fallback
+                        .requestMatchers("/api/superadmin/academic-year/school/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
                         .requestMatchers("/api/superadmin/**").hasAnyRole("SUPER_ADMIN", "DISTRICT_ADMIN", "STATE_ADMIN")
 
                         // 6. District level access

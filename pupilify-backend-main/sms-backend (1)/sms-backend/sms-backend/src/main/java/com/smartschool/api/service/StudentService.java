@@ -58,4 +58,6 @@ public interface StudentService {
     Student promoteStudent(String rollNumber, Long classId, Long sectionId, Long academicYearId);
 
     List<Student> getFilteredStudents(Long schoolId, Long classId, Long sectionId, String gender, String caste, Long academicYearId);
+
+    byte[] generateStudentReportExcel(List<Student> students) throws IOException;
 }

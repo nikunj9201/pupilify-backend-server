@@ -2,12 +2,15 @@ package com.smartschool.api.controller;
 
 import com.smartschool.api.dto.AcademicYearChangeRequest;
 import com.smartschool.api.dto.AcademicYearStatusResponse;
+import com.smartschool.api.entity.AcademicYearConfig;
+import com.smartschool.api.repository.AcademicYearConfigRepository;
 import com.smartschool.api.service.AcademicYearService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -18,6 +21,14 @@ public class AcademicYearController {
 
     @Autowired
     private AcademicYearService academicYearService;
+
+    @Autowired
+    private AcademicYearConfigRepository academicYearConfigRepository;
+
+    @GetMapping("/school/{schoolId}")
+    public ResponseEntity<List<AcademicYearConfig>> getAcademicYearsBySchool(@PathVariable Long schoolId) {
+        return ResponseEntity.ok(academicYearConfigRepository.findBySchoolId(schoolId));
+    }
 
     /**
      * School ka current year fetch karo
