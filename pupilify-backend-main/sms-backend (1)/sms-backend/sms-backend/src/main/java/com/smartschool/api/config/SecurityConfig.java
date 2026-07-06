@@ -69,7 +69,8 @@ public class SecurityConfig {
                         // EXAMS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see exam schedule)
                         .requestMatchers("/api/admin/exams/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // RESULTS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see their results)
-                        .requestMatchers("/api/admin/results/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/results/by-enrollment/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
+                        .requestMatchers("/api/admin/results/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
 
                         // 3. GENERIC ADMIN PATTERN (for other /api/admin/** endpoints)
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
