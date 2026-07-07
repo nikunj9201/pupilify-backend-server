@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/results")
+@RequestMapping("/api/admin/results")
 @CrossOrigin(origins = "*")
 public class ExamResultController {
 
@@ -32,7 +32,7 @@ public class ExamResultController {
     // ─────────────────────────────────────────────────────────
     // 1. BULK UPLOAD (Original endpoint)
     // ─────────────────────────────────────────────────────────
-    @PostMapping("/admin/upload-bulk")
+    @PostMapping("/upload-bulk")
     public ResponseEntity<?> uploadBulkResults(
             @RequestParam Long schoolId,
             @RequestParam Long examScheduleId,
@@ -85,7 +85,7 @@ public class ExamResultController {
     // ─────────────────────────────────────────────────────────
     // 2. GET BY ENROLLMENT ID (Result Card)
     // ─────────────────────────────────────────────────────────
-    @GetMapping("/admin/by-enrollment/{enrollmentId}/{schoolId}")
+    @GetMapping("/by-enrollment/{enrollmentId:.+}/{schoolId}")
     public ResponseEntity<ApiResponse<ResultCardResponse>> getResultByEnrollmentId(
             @PathVariable String enrollmentId,
             @PathVariable Long schoolId,
@@ -130,7 +130,7 @@ public class ExamResultController {
     // ─────────────────────────────────────────────────────────
     // 3. CLASS RESULT SHEET
     // ─────────────────────────────────────────────────────────
-    @GetMapping("/admin/class-sheet/{schoolId}/{classId}")
+    @GetMapping("/class-sheet/{schoolId}/{classId}")
     public ResponseEntity<ApiResponse<ClassResultResponse>> getClassResultSheet(
             @PathVariable Long schoolId,
             @PathVariable Long classId,
@@ -151,7 +151,7 @@ public class ExamResultController {
     // 4. EXCEL EXPORT & OTHERS (No changes needed)
     // ─────────────────────────────────────────────────────────
 
-    @GetMapping("/admin/export-excel/{schoolId}/{classId}")
+    @GetMapping("/export-excel/{schoolId}/{classId}")
     public ResponseEntity<byte[]> exportResultExcel(@PathVariable Long schoolId, @PathVariable Long classId, @RequestParam(required = false) Long sectionId, @RequestParam String examName, @RequestParam Long academicYearId) {
         try {
             byte[] excelBytes = resultService.generateClassResultExcel(schoolId, classId, sectionId, examName, academicYearId);
@@ -160,7 +160,7 @@ public class ExamResultController {
         } catch (Exception e) { return ResponseEntity.internalServerError().build(); }
     }
 
-    @GetMapping("/admin/exam-names")
+    @GetMapping("/exam-names")
     public ResponseEntity<ApiResponse<List<String>>> getExamNames(@RequestParam Long schoolId, @RequestParam Long academicYearId) {
         try {
             List<String> names = resultService.getUniqueExamNames(schoolId, academicYearId);
