@@ -46,6 +46,9 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver createDriver(Long schoolId, Driver driver, Long busId, MultipartFile aadharCardPhoto, MultipartFile drivingLicensePhoto, MultipartFile bankPassbookPhoto) throws IOException {
+        if (driver.getPhoneNo() == null || driver.getPhoneNo().isEmpty()) {
+            throw new RuntimeException("Phone number is required");
+        }
         Bus bus = busRepository.findById(busId).orElseThrow(() -> new RuntimeException("Bus not found"));
         if (!bus.getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Bus does not belong to this school");
@@ -91,6 +94,7 @@ public class DriverServiceImpl implements DriverService {
     public Driver updateDriver(Long schoolId, Long driverId, Driver driverDetails, MultipartFile aadharCardPhoto, MultipartFile drivingLicensePhoto, MultipartFile bankPassbookPhoto) throws IOException {
         Driver driver = getDriverById(schoolId, driverId);
         driver.setPhoneNo(driverDetails.getPhoneNo());
+        driver.setAlternateNo(driverDetails.getAlternateNo());
         driver.setDob(driverDetails.getDob());
         driver.setAddress(driverDetails.getAddress());
 

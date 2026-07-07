@@ -1,5 +1,6 @@
 package com.smartschool.api.controller;
 
+import com.smartschool.api.entity.Bus;
 import com.smartschool.api.entity.BusFeePayment;
 import com.smartschool.api.entity.StudentBusAssignment;
 import com.smartschool.api.service.BusService;
@@ -11,12 +12,22 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/buses")
+@RequestMapping("/api/admin/buses")
 @CrossOrigin("*")
 public class BusController {
 
     @Autowired
     private BusService busService;
+
+    @PostMapping("/{schoolId}/add")
+    public ResponseEntity<Bus> addBus(@PathVariable Long schoolId, @RequestParam String registrationNo, @RequestParam int capacity) {
+        return ResponseEntity.ok(busService.addBus(schoolId, registrationNo, capacity));
+    }
+
+    @GetMapping("/school/{schoolId}")
+    public ResponseEntity<List<Bus>> getBusesBySchool(@PathVariable Long schoolId) {
+        return ResponseEntity.ok(busService.getBusesBySchool(schoolId));
+    }
 
     @PostMapping("/assign-student")
     public ResponseEntity<StudentBusAssignment> assignStudentToBus(@RequestParam Long studentId, @RequestParam Long stoppageId, @RequestParam Long academicYearId) {

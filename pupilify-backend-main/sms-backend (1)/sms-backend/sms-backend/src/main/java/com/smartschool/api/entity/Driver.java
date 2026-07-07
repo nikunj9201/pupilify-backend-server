@@ -21,7 +21,10 @@ public class Driver {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String phoneNo;
+
+    private String alternateNo;
     private String dob;
     private String address;
     private String aadharCardPhoto;

@@ -30,6 +30,27 @@ public class BusServiceImpl implements BusService {
     @Autowired
     private AcademicYearConfigRepository academicYearRepository;
 
+    @Autowired
+    private BusRepository busRepository;
+
+    @Autowired
+    private SchoolRepository schoolRepository;
+
+    @Override
+    public Bus addBus(Long schoolId, String registrationNo, int capacity) {
+        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new RuntimeException("School not found"));
+        Bus bus = new Bus();
+        bus.setSchool(school);
+        bus.setRegistrationNo(registrationNo);
+        bus.setCapacity(capacity);
+        return busRepository.save(bus);
+    }
+
+    @Override
+    public List<Bus> getBusesBySchool(Long schoolId) {
+        return busRepository.findBySchoolId(schoolId);
+    }
+
     @Override
     public StudentBusAssignment assignStudentToBus(Long studentId, Long stoppageId, Long academicYearId) {
         Student student = studentRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student not found"));
@@ -46,6 +67,7 @@ public class BusServiceImpl implements BusService {
         newAssignment.setStoppage(stoppage);
         newAssignment.setAcademicYear(academicYear);
         newAssignment.setTransportFee(stoppage.getFee());
+        newAssignment.setActive(true);
         return assignmentRepository.save(newAssignment);
     }
 
