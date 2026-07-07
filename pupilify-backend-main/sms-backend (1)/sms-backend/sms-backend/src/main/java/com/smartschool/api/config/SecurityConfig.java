@@ -71,6 +71,12 @@ public class SecurityConfig {
                         // RESULTS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see their results)
                         .requestMatchers(HttpMethod.GET, "/api/admin/results/by-enrollment/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
                         .requestMatchers("/api/admin/results/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
+                        .requestMatchers("/api/admin/drivers/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/admin/routes/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/buses/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "STUDENT")
+                        .requestMatchers("/api/transport/location/toggle/**", "/api/transport/location/update/**").hasRole("DRIVER")
+                        .requestMatchers("/api/transport/location/all/**").hasAnyRole("ADMIN", "PRINCIPAL")
+                        .requestMatchers("/api/transport/location/student/**").hasRole("STUDENT")
 
                         // 3. GENERIC ADMIN PATTERN (for other /api/admin/** endpoints)
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")

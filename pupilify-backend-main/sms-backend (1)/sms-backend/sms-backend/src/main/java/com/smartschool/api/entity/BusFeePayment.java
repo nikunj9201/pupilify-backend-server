@@ -5,9 +5,9 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "student_bus_assignments")
+@Table(name = "bus_fee_payments")
 @Data
-public class StudentBusAssignment {
+public class BusFeePayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,22 +17,20 @@ public class StudentBusAssignment {
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "stoppage_id", nullable = false)
-    private Stoppage stoppage;
-
-    @ManyToOne
     @JoinColumn(name = "academic_year_id", nullable = false)
     private AcademicYearConfig academicYear;
 
     @Column(nullable = false)
-    private double transportFee;
+    private double amountPaid;
 
-    private LocalDate assignmentDate;
+    private LocalDate paymentDate;
 
-    private boolean isActive = true;
+    private String paymentMode;
+
+    private String receiptNumber;
 
     @PrePersist
     protected void onCreate() {
-        this.assignmentDate = LocalDate.now();
+        this.paymentDate = LocalDate.now();
     }
 }
