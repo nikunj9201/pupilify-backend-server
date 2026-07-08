@@ -16,7 +16,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Role role; // SUPER_ADMIN, ADMIN, TEACHER, STUDENT
 
     @ManyToOne

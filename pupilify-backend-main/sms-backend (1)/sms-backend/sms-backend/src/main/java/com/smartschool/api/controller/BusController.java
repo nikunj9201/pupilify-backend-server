@@ -12,19 +12,19 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/buses")
+@RequestMapping("/api/buses")
 @CrossOrigin("*")
 public class BusController {
 
     @Autowired
     private BusService busService;
 
-    @PostMapping("/{schoolId}/add")
+    @PostMapping("/admin/{schoolId}/add")
     public ResponseEntity<Bus> addBus(@PathVariable Long schoolId, @RequestParam String registrationNo, @RequestParam int capacity) {
         return ResponseEntity.ok(busService.addBus(schoolId, registrationNo, capacity));
     }
 
-    @GetMapping("/school/{schoolId}")
+    @GetMapping("/admin/school/{schoolId}")
     public ResponseEntity<List<Bus>> getBusesBySchool(@PathVariable Long schoolId) {
         return ResponseEntity.ok(busService.getBusesBySchool(schoolId));
     }
@@ -34,13 +34,18 @@ public class BusController {
         return ResponseEntity.ok(busService.assignStudentToBus(studentId, stoppageId, academicYearId));
     }
 
-    @PostMapping("/collect-fee")
+    @PostMapping("/admin/collect-fee")
     public ResponseEntity<BusFeePayment> collectBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
         return ResponseEntity.ok(busService.collectBusFee(studentId, academicYearId, amount, paymentMode));
     }
 
-    @GetMapping("/due-report/{schoolId}")
+    @GetMapping("/admin/due-report/{schoolId}")
     public ResponseEntity<List<Map<String, Object>>> getBusFeeDueReport(@PathVariable Long schoolId, @RequestParam Long academicYearId) {
         return ResponseEntity.ok(busService.getBusFeeDueReport(schoolId, academicYearId));
+    }
+
+    @GetMapping("/student-assignment/{studentId}")
+    public ResponseEntity<StudentBusAssignment> getStudentBusAssignment(@PathVariable Long studentId, @RequestParam Long academicYearId) {
+        return ResponseEntity.ok(busService.getStudentBusAssignment(studentId, academicYearId));
     }
 }

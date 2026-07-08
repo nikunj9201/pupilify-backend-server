@@ -110,4 +110,10 @@ public class BusServiceImpl implements BusService {
         }
         return report;
     }
+
+    @Override
+    public StudentBusAssignment getStudentBusAssignment(Long studentId, Long academicYearId) {
+        return assignmentRepository.findByStudentIdAndAcademicYearIdAndIsActiveTrue(studentId, academicYearId)
+                .orElseThrow(() -> new RuntimeException("No active bus assignment found for this student in the given academic year"));
+    }
 }
