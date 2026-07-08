@@ -2,6 +2,8 @@ package com.smartschool.api.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "student_fee_adjustments")
@@ -30,6 +32,10 @@ public class StudentFeeAdjustment {
 
     @Column(nullable = false)
     private boolean isArchived = false;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public enum FeeAdjustmentType {
         ADMISSION_FEE,

@@ -1,8 +1,10 @@
 package com.smartschool.api.controller;
 
+import com.smartschool.api.dto.BusAssignmentDTO;
 import com.smartschool.api.entity.Bus;
 import com.smartschool.api.entity.BusFeePayment;
 import com.smartschool.api.entity.StudentBusAssignment;
+import com.smartschool.api.entity.TransportFeeLog;
 import com.smartschool.api.service.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +31,19 @@ public class BusController {
         return ResponseEntity.ok(busService.getBusesBySchool(schoolId));
     }
 
+    @DeleteMapping("/admin/delete/{schoolId}/{busId}")
+    public ResponseEntity<Void> deleteBus(@PathVariable Long schoolId, @PathVariable Long busId) {
+        busService.deleteBus(schoolId, busId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/assign-student")
     public ResponseEntity<StudentBusAssignment> assignStudentToBus(@RequestParam Long studentId, @RequestParam Long stoppageId, @RequestParam Long academicYearId) {
         return ResponseEntity.ok(busService.assignStudentToBus(studentId, stoppageId, academicYearId));
     }
 
     @PostMapping("/admin/collect-fee")
-    public ResponseEntity<BusFeePayment> collectBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
+    public ResponseEntity<TransportFeeLog> collectBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
         return ResponseEntity.ok(busService.collectBusFee(studentId, academicYearId, amount, paymentMode));
     }
 
@@ -47,5 +55,15 @@ public class BusController {
     @GetMapping("/student-assignment/{studentId}")
     public ResponseEntity<StudentBusAssignment> getStudentBusAssignment(@PathVariable Long studentId, @RequestParam Long academicYearId) {
         return ResponseEntity.ok(busService.getStudentBusAssignment(studentId, academicYearId));
+    }
+
+    @GetMapping("/assignments/route/{routeId}")
+    public ResponseEntity<List<BusAssignmentDTO>> getAssignmentsByRoute(@PathVariable Long routeId) {
+        return ResponseEntity.ok(busService.getAssignmentsByRoute(routeId));
+    }
+
+    @GetMapping("/fee-history/{studentId}")
+    public ResponseEntity<List<TransportFeeLog>> getFeeHistory(@PathVariable Long studentId, @RequestParam Long academicYearId) {
+        return ResponseEntity.ok(busService.getFeeHistory(studentId, academicYearId));
     }
 }

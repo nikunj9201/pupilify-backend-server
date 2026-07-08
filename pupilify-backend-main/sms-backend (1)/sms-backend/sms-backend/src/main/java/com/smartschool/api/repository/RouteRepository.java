@@ -7,4 +7,5 @@ import java.util.List;
 public interface RouteRepository extends JpaRepository<Route, Long> {
     List<Route> findBySchoolIdAndBusId(Long schoolId, Long busId);
     List<Route> findBySchoolId(Long schoolId);
+    long countByBusId(Long busId);
 }
