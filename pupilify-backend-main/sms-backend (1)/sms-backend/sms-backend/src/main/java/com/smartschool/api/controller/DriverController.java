@@ -61,4 +61,9 @@ public class DriverController {
     public ResponseEntity<Driver> assignBus(@PathVariable Long schoolId, @PathVariable Long driverId, @PathVariable Long busId) {
         return ResponseEntity.ok(driverService.assignBus(schoolId, driverId, busId));
     }
+
+    @PutMapping("/remove-from-bus/{driverId}")
+    public ResponseEntity<Driver> removeFromBus(@PathVariable Long driverId) {
+        return ResponseEntity.ok(driverService.removeFromBus(driverId));
+    }
 }

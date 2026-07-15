@@ -12,4 +12,5 @@ public interface DriverService {
     Driver updateDriver(Long schoolId, Long driverId, Driver driverDetails, MultipartFile aadharCardPhoto, MultipartFile drivingLicensePhoto, MultipartFile bankPassbookPhoto) throws IOException;
     void deleteDriver(Long schoolId, Long driverId);
     Driver assignBus(Long schoolId, Long driverId, Long busId);
+    Driver removeFromBus(Long driverId);
 }

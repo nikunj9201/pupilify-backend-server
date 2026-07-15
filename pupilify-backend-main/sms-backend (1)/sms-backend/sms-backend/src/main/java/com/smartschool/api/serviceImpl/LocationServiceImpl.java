@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -72,10 +73,16 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public BusLocationResponse getStudentBusLocation(Long studentId) {
-        StudentTransportMapping mapping = mappingRepository.findByStudentId(studentId)
-            .orElseThrow(() -> new RuntimeException("Student not assigned to any bus route."));
+        Optional<StudentTransportMapping> mappingOpt = mappingRepository.findByStudentId(studentId);
         
-        Long busId = mapping.getRoute().getBus().getId();
+        if (mappingOpt.isEmpty()) {
+            BusLocationResponse response = new BusLocationResponse();
+            response.setTrackingActive(false);
+            response.setMessage("Student not assigned to any bus route.");
+            return response;
+        }
+        
+        Long busId = mappingOpt.get().getRoute().getBus().getId();
 
         return liveLocationRepository.findById(busId)
             .map(location -> {

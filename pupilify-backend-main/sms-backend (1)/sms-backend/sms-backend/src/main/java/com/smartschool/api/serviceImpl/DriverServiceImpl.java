@@ -79,7 +79,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver getDriverById(Long schoolId, Long driverId) {
         Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new RuntimeException("Driver not found"));
-        if (!driver.getBus().getSchool().getId().equals(schoolId)) {
+        if (driver.getBus() != null && !driver.getBus().getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Driver does not belong to this school");
         }
         return driver;
@@ -129,6 +129,13 @@ public class DriverServiceImpl implements DriverService {
             throw new RuntimeException("Bus does not belong to this school");
         }
         driver.setBus(bus);
+        return driverRepository.save(driver);
+    }
+
+    @Override
+    public Driver removeFromBus(Long driverId) {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(() -> new RuntimeException("Driver not found"));
+        driver.setBus(null);
         return driverRepository.save(driver);
     }
 
