@@ -1,8 +1,8 @@
 package com.smartschool.api.controller;
 
 import com.smartschool.api.dto.BusAssignmentDTO;
+import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.Bus;
-import com.smartschool.api.entity.BusFeePayment;
 import com.smartschool.api.entity.StudentBusAssignment;
 import com.smartschool.api.entity.TransportFeeLog;
 import com.smartschool.api.service.BusService;
@@ -43,7 +43,7 @@ public class BusController {
     }
 
     @PostMapping("/admin/collect-fee")
-    public ResponseEntity<TransportFeeLog> collectBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
+    public ResponseEntity<TransportFeeLogDTO> collectBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
         return ResponseEntity.ok(busService.collectBusFee(studentId, academicYearId, amount, paymentMode));
     }
 

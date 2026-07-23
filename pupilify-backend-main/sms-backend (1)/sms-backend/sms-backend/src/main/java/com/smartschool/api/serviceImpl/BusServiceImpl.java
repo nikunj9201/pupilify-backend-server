@@ -1,6 +1,7 @@
 package com.smartschool.api.serviceImpl;
 
 import com.smartschool.api.dto.BusAssignmentDTO;
+import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
 import com.smartschool.api.service.BusService;
@@ -98,7 +99,7 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
-    public TransportFeeLog collectBusFee(Long studentId, Long academicYearId, double amount, String paymentMode) {
+    public TransportFeeLogDTO collectBusFee(Long studentId, Long academicYearId, double amount, String paymentMode) {
         TransportFeeLog dueLog = feeLogRepository.findFirstByStudentIdAndAcademicYearIdAndStatusOrderByMonthYearAsc(studentId, academicYearId, TransportFeeLog.FeeStatus.DUE)
                 .orElseThrow(() -> new RuntimeException("No due bus fee found for this student"));
 
@@ -106,7 +107,8 @@ public class BusServiceImpl implements BusService {
         dueLog.setPaymentMode(paymentMode);
         dueLog.setPaymentDate(LocalDate.now());
         dueLog.setStatus(TransportFeeLog.FeeStatus.PAID);
-        return feeLogRepository.save(dueLog);
+        TransportFeeLog savedLog = feeLogRepository.save(dueLog);
+        return TransportFeeLogDTO.fromEntity(savedLog);
     }
 
     @Override
