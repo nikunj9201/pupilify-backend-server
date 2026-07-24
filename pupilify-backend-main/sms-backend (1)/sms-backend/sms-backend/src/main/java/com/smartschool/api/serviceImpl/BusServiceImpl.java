@@ -79,21 +79,24 @@ public class BusServiceImpl implements BusService {
         newAssignment.setTransportFee(stoppage.getFee());
         newAssignment.setActive(true);
 
-        // Create monthly fee logs
-        createMonthlyFeeLogs(student, stoppage, academicYear);
-
         return assignmentRepository.save(newAssignment);
     }
 
-    private void createMonthlyFeeLogs(Student student, Stoppage stoppage, AcademicYearConfig academicYear) {
+    @Override
+    public void generateMonthlyFees(Long schoolId, Long academicYearId, List<String> months) {
+        List<StudentBusAssignment> assignments = assignmentRepository.findByStudent_School_IdAndAcademicYearIdAndIsActiveTrue(schoolId, academicYearId);
+        AcademicYearConfig academicYear = academicYearRepository.findById(academicYearId).orElseThrow(() -> new RuntimeException("Academic year not found"));
+
         List<TransportFeeLog> logs = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {
-            TransportFeeLog log = new TransportFeeLog();
-            log.setStudent(student);
-            log.setAcademicYear(academicYear);
-            log.setAmountDue(stoppage.getFee());
-            log.setMonthYear(LocalDate.now().plusMonths(i).format(DateTimeFormatter.ofPattern("MMMM yyyy")));
-            logs.add(log);
+        for (StudentBusAssignment assignment : assignments) {
+            for (String month : months) {
+                TransportFeeLog log = new TransportFeeLog();
+                log.setStudent(assignment.getStudent());
+                log.setAcademicYear(academicYear);
+                log.setAmountDue(assignment.getTransportFee());
+                log.setMonthYear(month + " " + LocalDate.now().getYear());
+                logs.add(log);
+            }
         }
         feeLogRepository.saveAll(logs);
     }

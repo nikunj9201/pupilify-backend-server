@@ -42,6 +42,12 @@ public class BusController {
         return ResponseEntity.ok(busService.assignStudentToBus(studentId, stoppageId, academicYearId));
     }
 
+    @PostMapping("/admin/generate-monthly-fees")
+    public ResponseEntity<Void> generateMonthlyFees(@RequestParam Long schoolId, @RequestParam Long academicYearId, @RequestBody List<String> months) {
+        busService.generateMonthlyFees(schoolId, academicYearId, months);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/admin/collect-fee")
     public ResponseEntity<TransportFeeLogDTO> collectBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
         return ResponseEntity.ok(busService.collectBusFee(studentId, academicYearId, amount, paymentMode));

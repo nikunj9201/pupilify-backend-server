@@ -77,6 +77,7 @@ public class Student {
     private String incomeCertificate;
     private String castCertificate;
     private String domicileCertificate;
+    private String penNumber;
 
 
     @ManyToOne
