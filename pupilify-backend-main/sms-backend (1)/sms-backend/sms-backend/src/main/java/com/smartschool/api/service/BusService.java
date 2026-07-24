@@ -19,5 +19,5 @@ public interface BusService {
     StudentBusAssignment getStudentBusAssignment(Long studentId, Long academicYearId);
     List<BusAssignmentDTO> getAssignmentsByRoute(Long routeId);
     void deleteBus(Long schoolId, Long busId);
-    List<TransportFeeLog> getFeeHistory(Long studentId, Long academicYearId);
+    List<TransportFeeLogDTO> getFeeHistory(Long studentId, Long academicYearId);
 }

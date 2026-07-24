@@ -4,7 +4,6 @@ import com.smartschool.api.dto.BusAssignmentDTO;
 import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.Bus;
 import com.smartschool.api.entity.StudentBusAssignment;
-import com.smartschool.api.entity.TransportFeeLog;
 import com.smartschool.api.service.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -69,7 +68,7 @@ public class BusController {
     }
 
     @GetMapping("/fee-history/{studentId}")
-    public ResponseEntity<List<TransportFeeLog>> getFeeHistory(@PathVariable Long studentId, @RequestParam Long academicYearId) {
+    public ResponseEntity<List<TransportFeeLogDTO>> getFeeHistory(@PathVariable Long studentId, @RequestParam Long academicYearId) {
         return ResponseEntity.ok(busService.getFeeHistory(studentId, academicYearId));
     }
 }

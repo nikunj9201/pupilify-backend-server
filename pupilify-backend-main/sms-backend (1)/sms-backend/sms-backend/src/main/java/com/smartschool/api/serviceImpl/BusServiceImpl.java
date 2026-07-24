@@ -180,7 +180,9 @@ public class BusServiceImpl implements BusService {
     }
 
     @Override
-    public List<TransportFeeLog> getFeeHistory(Long studentId, Long academicYearId) {
-        return feeLogRepository.findByStudentIdAndAcademicYearId(studentId, academicYearId);
+    public List<TransportFeeLogDTO> getFeeHistory(Long studentId, Long academicYearId) {
+        return feeLogRepository.findByStudentIdAndAcademicYearId(studentId, academicYearId).stream()
+                .map(TransportFeeLogDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 }
