@@ -151,6 +151,7 @@ public class BusServiceImpl implements BusService {
         return assignmentRepository.findByStoppage_Route_Id(routeId).stream()
                 .map(assignment -> {
                     BusAssignmentDTO dto = new BusAssignmentDTO();
+                    dto.setAssignmentId(assignment.getId());
                     dto.setStudentId(assignment.getStudent().getId());
                     dto.setEnrollmentId(assignment.getStudent().getEnrollmentId());
                     dto.setName(assignment.getStudent().getName());
@@ -184,5 +185,17 @@ public class BusServiceImpl implements BusService {
         return feeLogRepository.findByStudentIdAndAcademicYearId(studentId, academicYearId).stream()
                 .map(TransportFeeLogDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void unassignStudent(Long assignmentId) {
+        StudentBusAssignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Assignment not found"));
+        assignment.setActive(false);
+        assignmentRepository.save(assignment);
+
+        List<TransportFeeLog> dueLogs = feeLogRepository.findByStudentIdAndAcademicYearId(assignment.getStudent().getId(), assignment.getAcademicYear().getId())
+                .stream().filter(log -> log.getStatus() == TransportFeeLog.FeeStatus.DUE).collect(Collectors.toList());
+        feeLogRepository.deleteAll(dueLogs);
     }
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class BusAssignmentDTO {
+    private Long assignmentId;
     private Long studentId;
     private String enrollmentId;
     private String name;

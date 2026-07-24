@@ -4,6 +4,7 @@ import com.smartschool.api.dto.BusAssignmentDTO;
 import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.Bus;
 import com.smartschool.api.entity.StudentBusAssignment;
+import com.smartschool.api.entity.TransportFeeLog;
 import com.smartschool.api.service.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,12 @@ public class BusController {
     @PostMapping("/assign-student")
     public ResponseEntity<StudentBusAssignment> assignStudentToBus(@RequestParam Long studentId, @RequestParam Long stoppageId, @RequestParam Long academicYearId) {
         return ResponseEntity.ok(busService.assignStudentToBus(studentId, stoppageId, academicYearId));
+    }
+
+    @DeleteMapping("/unassign-student/{assignmentId}")
+    public ResponseEntity<Void> unassignStudent(@PathVariable Long assignmentId) {
+        busService.unassignStudent(assignmentId);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/admin/generate-monthly-fees")
