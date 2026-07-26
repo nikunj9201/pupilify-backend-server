@@ -29,12 +29,12 @@ public class StudentBusAssignment {
 
     private LocalDate assignmentDate;
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT true")
-    private boolean isActive = true;
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true;
 
     @PrePersist
     protected void onCreate() {
         this.assignmentDate = LocalDate.now();
-        this.isActive = true;
+        this.active = true;
     }
 }
