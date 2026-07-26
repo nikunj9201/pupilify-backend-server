@@ -68,7 +68,7 @@ public class BusServiceImpl implements BusService {
         Stoppage stoppage = stoppageRepository.findById(stoppageId).orElseThrow(() -> new RuntimeException("Stoppage not found"));
         AcademicYearConfig academicYear = academicYearRepository.findById(academicYearId).orElseThrow(() -> new RuntimeException("Academic year not found"));
 
-        assignmentRepository.findByStudentIdAndAcademicYearIdAndIsActiveTrue(studentId, academicYearId).ifPresent(assignment -> {
+        assignmentRepository.findByStudentIdAndAcademicYearIdAndActiveTrue(studentId, academicYearId).ifPresent(assignment -> {
             throw new RuntimeException("Student is already assigned to a bus");
         });
 
@@ -84,7 +84,7 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public void generateMonthlyFees(Long schoolId, Long academicYearId, List<String> months) {
-        List<StudentBusAssignment> assignments = assignmentRepository.findByStudent_School_IdAndAcademicYearIdAndIsActiveTrue(schoolId, academicYearId);
+        List<StudentBusAssignment> assignments = assignmentRepository.findByStudent_School_IdAndAcademicYearIdAndActiveTrue(schoolId, academicYearId);
         AcademicYearConfig academicYear = academicYearRepository.findById(academicYearId).orElseThrow(() -> new RuntimeException("Academic year not found"));
 
         List<TransportFeeLog> logs = new ArrayList<>();
@@ -116,7 +116,7 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public List<Map<String, Object>> getBusFeeDueReport(Long schoolId, Long academicYearId) {
-        List<StudentBusAssignment> assignments = assignmentRepository.findByStudent_School_IdAndAcademicYearIdAndIsActiveTrue(schoolId, academicYearId);
+        List<StudentBusAssignment> assignments = assignmentRepository.findByStudent_School_IdAndAcademicYearIdAndActiveTrue(schoolId, academicYearId);
         List<Map<String, Object>> report = new ArrayList<>();
 
         for (StudentBusAssignment assignment : assignments) {
@@ -142,7 +142,7 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public StudentBusAssignment getStudentBusAssignment(Long studentId, Long academicYearId) {
-        return assignmentRepository.findByStudentIdAndAcademicYearIdAndIsActiveTrue(studentId, academicYearId)
+        return assignmentRepository.findByStudentIdAndAcademicYearIdAndActiveTrue(studentId, academicYearId)
                 .orElseThrow(() -> new RuntimeException("No active bus assignment found for this student in the given academic year"));
     }
 
