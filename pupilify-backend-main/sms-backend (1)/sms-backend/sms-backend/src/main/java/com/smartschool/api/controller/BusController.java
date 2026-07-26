@@ -1,73 +1,81 @@
 package com.smartschool.api.controller;
 
+import com.smartschool.api.dto.BusAssignmentDTO;
+import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.Bus;
-import com.smartschool.api.entity.School;
-import com.smartschool.api.repository.BusRepository;
-import com.smartschool.api.repository.SchoolRepository;
+import com.smartschool.api.entity.StudentBusAssignment;
+import com.smartschool.api.entity.TransportFeeLog;
+import com.smartschool.api.service.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/buses")
+@RequestMapping("/api/buses")
 @CrossOrigin("*")
 public class BusController {
 
     @Autowired
-    private BusRepository busRepository;
+    private BusService busService;
 
-    @Autowired
-    private SchoolRepository schoolRepository;
-
-    @GetMapping("/school/{schoolId}")
-    public ResponseEntity<List<Bus>> getBySchool(@PathVariable Long schoolId) {
-        return ResponseEntity.ok(busRepository.findBySchoolId(schoolId));
+    @PostMapping("/admin/{schoolId}/add")
+    public ResponseEntity<Bus> addBus(@PathVariable Long schoolId, @RequestParam String registrationNo, @RequestParam int capacity) {
+        return ResponseEntity.ok(busService.addBus(schoolId, registrationNo, capacity));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Bus> getById(@PathVariable Long id) {
-        Optional<Bus> b = busRepository.findById(id);
-        return b.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/admin/school/{schoolId}")
+    public ResponseEntity<List<Bus>> getBusesBySchool(@PathVariable Long schoolId) {
+        return ResponseEntity.ok(busService.getBusesBySchool(schoolId));
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody Bus payload) {
-        if (payload.getSchool() == null || payload.getSchool().getId() == null) {
-            return ResponseEntity.badRequest().body("schoolId is required in payload.school.id");
-        }
-        Optional<School> s = schoolRepository.findById(payload.getSchool().getId());
-        if (s.isEmpty()) return ResponseEntity.badRequest().body("School not found");
-        if (busRepository.existsByRegistrationNo(payload.getRegistrationNo())) {
-            return ResponseEntity.badRequest().body("Registration number already exists");
-        }
-        payload.setSchool(s.get());
-        Bus saved = busRepository.save(payload);
-        return ResponseEntity.ok(saved);
+    @DeleteMapping("/admin/delete/{schoolId}/{busId}")
+    public ResponseEntity<Void> deleteBus(@PathVariable Long schoolId, @PathVariable Long busId) {
+        busService.deleteBus(schoolId, busId);
+        return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Bus payload) {
-        Optional<Bus> b = busRepository.findById(id);
-        if (b.isEmpty()) return ResponseEntity.notFound().build();
-        Bus existing = b.get();
-        existing.setRegistrationNo(payload.getRegistrationNo());
-        existing.setCapacity(payload.getCapacity());
-        existing.setDriverName(payload.getDriverName());
-        if (payload.getSchool() != null && payload.getSchool().getId() != null) {
-            schoolRepository.findById(payload.getSchool().getId()).ifPresent(existing::setSchool);
-        }
-        busRepository.save(existing);
-        return ResponseEntity.ok(existing);
+    @PostMapping("/assign-student")
+    public ResponseEntity<StudentBusAssignment> assignStudentToBus(@RequestParam Long studentId, @RequestParam Long stoppageId, @RequestParam Long academicYearId) {
+        return ResponseEntity.ok(busService.assignStudentToBus(studentId, stoppageId, academicYearId));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
-        if (!busRepository.existsById(id)) return ResponseEntity.notFound().build();
-        busRepository.deleteById(id);
-        return ResponseEntity.ok("Deleted");
+    @DeleteMapping("/unassign-student/{assignmentId}")
+    public ResponseEntity<Void> unassignStudent(@PathVariable Long assignmentId) {
+        busService.unassignStudent(assignmentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/admin/generate-monthly-fees")
+    public ResponseEntity<Void> generateMonthlyFees(@RequestParam Long schoolId, @RequestParam Long academicYearId, @RequestBody List<String> months) {
+        busService.generateMonthlyFees(schoolId, academicYearId, months);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/admin/collect-fee")
+    public ResponseEntity<TransportFeeLogDTO> collectBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
+        return ResponseEntity.ok(busService.collectBusFee(studentId, academicYearId, amount, paymentMode));
+    }
+
+    @GetMapping("/admin/due-report/{schoolId}")
+    public ResponseEntity<List<Map<String, Object>>> getBusFeeDueReport(@PathVariable Long schoolId, @RequestParam Long academicYearId) {
+        return ResponseEntity.ok(busService.getBusFeeDueReport(schoolId, academicYearId));
+    }
+
+    @GetMapping("/student-assignment/{studentId}")
+    public ResponseEntity<StudentBusAssignment> getStudentBusAssignment(@PathVariable Long studentId, @RequestParam Long academicYearId) {
+        return ResponseEntity.ok(busService.getStudentBusAssignment(studentId, academicYearId));
+    }
+
+    @GetMapping("/assignments/route/{routeId}")
+    public ResponseEntity<List<BusAssignmentDTO>> getAssignmentsByRoute(@PathVariable Long routeId) {
+        return ResponseEntity.ok(busService.getAssignmentsByRoute(routeId));
+    }
+
+    @GetMapping("/fee-history/{studentId}")
+    public ResponseEntity<List<TransportFeeLogDTO>> getFeeHistory(@PathVariable Long studentId, @RequestParam Long academicYearId) {
+        return ResponseEntity.ok(busService.getFeeHistory(studentId, academicYearId));
     }
 }
-

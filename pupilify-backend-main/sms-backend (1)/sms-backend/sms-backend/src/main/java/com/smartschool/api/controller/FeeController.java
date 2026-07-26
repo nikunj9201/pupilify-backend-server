@@ -12,7 +12,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/admin/fees")
 @CrossOrigin("*")
-public class FeeController {
+public class  FeeController {
 
     @Autowired private FeeStructureRepository feeStructureRepository;
     @Autowired private FeePaymentRepository feePaymentRepository;
