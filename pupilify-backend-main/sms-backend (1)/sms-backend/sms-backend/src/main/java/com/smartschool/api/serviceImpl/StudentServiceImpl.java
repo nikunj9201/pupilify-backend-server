@@ -1,5 +1,6 @@
 package com.smartschool.api.serviceImpl;
 
+import com.smartschool.api.dto.StudentExcelDTO;
 import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
 import com.smartschool.api.service.StudentService;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -43,17 +45,15 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public byte[] generateStudentReportExcel(List<Student> students) throws IOException {
+    public byte[] generateStudentReportExcel(List<StudentExcelDTO> students) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Students");
 
         String[] headers = {
-                "Enrollment ID", "Roll Number", "Name", "Gender", "Phone No", "Email", "Address", "DOB",
+                "ID", "Enrollment ID", "Roll Number", "Name", "Gender", "Phone No", "Email", "Address", "DOB",
                 "Father Name", "Mother Name", "Father Contact Number", "Caste", "APAAR ID", "Aadhar Card No",
                 "Samagra ID", "Family ID", "Scholar No", "Father Occupation", "Father Salary", "Postal Code",
-                "Bank Name", "Bank Account No", "IFSC Code", "Branch", "Student Photo", "Last Class Marksheet",
-                "TC Image", "Aadhar Card Image", "Samagra ID Image", "Bank Passbook Image", "APAAR Card Image",
-                "Birth Certificate", "Income Certificate", "Cast Certificate", "Domicile Certificate"
+                "Bank Name", "Bank Account No", "IFSC Code", "Branch", "PEN Number", "Class", "Section", "Academic Year"
         };
 
         Row headerRow = sheet.createRow(0);
@@ -63,49 +63,49 @@ public class StudentServiceImpl implements StudentService {
         }
 
         int rowNum = 1;
-        for (Student student : students) {
+        for (StudentExcelDTO student : students) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(student.getEnrollmentId());
-            row.createCell(1).setCellValue(student.getRollNumber());
-            row.createCell(2).setCellValue(student.getName());
-            row.createCell(3).setCellValue(student.getGender());
-            row.createCell(4).setCellValue(student.getPhoneNo());
-            row.createCell(5).setCellValue(student.getEmail());
-            row.createCell(6).setCellValue(student.getAddress());
-            row.createCell(7).setCellValue(student.getDob());
-            row.createCell(8).setCellValue(student.getFatherName());
-            row.createCell(9).setCellValue(student.getMotherName());
-            row.createCell(10).setCellValue(student.getFatherContactNumber());
-            row.createCell(11).setCellValue(student.getCaste());
-            row.createCell(12).setCellValue(student.getApaarId());
-            row.createCell(13).setCellValue(student.getAadharCardNo());
-            row.createCell(14).setCellValue(student.getSamagraId());
-            row.createCell(15).setCellValue(student.getFamilyId());
-            row.createCell(16).setCellValue(student.getScholarNo());
-            row.createCell(17).setCellValue(student.getFatherOccupation());
-            row.createCell(18).setCellValue(student.getFatherSalary());
-            row.createCell(19).setCellValue(student.getPostalCode());
-            row.createCell(20).setCellValue(student.getBankName());
-            row.createCell(21).setCellValue(student.getBankAccountNo());
-            row.createCell(22).setCellValue(student.getIfscCode());
-            row.createCell(23).setCellValue(student.getBranch());
-            row.createCell(24).setCellValue(student.getStudentPhoto());
-            row.createCell(25).setCellValue(student.getLastClassMarksheet());
-            row.createCell(26).setCellValue(student.getTcImage());
-            row.createCell(27).setCellValue(student.getAadharCardImage());
-            row.createCell(28).setCellValue(student.getSamagraIdImage());
-            row.createCell(29).setCellValue(student.getBankPassbookImage());
-            row.createCell(30).setCellValue(student.getApaarCardImage());
-            row.createCell(31).setCellValue(student.getBirthCertificate());
-            row.createCell(32).setCellValue(student.getIncomeCertificate());
-            row.createCell(33).setCellValue(student.getCastCertificate());
-            row.createCell(34).setCellValue(student.getDomicileCertificate());
+            row.createCell(0).setCellValue(student.getId());
+            row.createCell(1).setCellValue(student.getEnrollmentId());
+            row.createCell(2).setCellValue(student.getRollNumber());
+            row.createCell(3).setCellValue(student.getName());
+            row.createCell(4).setCellValue(student.getGender());
+            row.createCell(5).setCellValue(student.getPhoneNo());
+            row.createCell(6).setCellValue(student.getEmail());
+            row.createCell(7).setCellValue(student.getAddress());
+            row.createCell(8).setCellValue(student.getDob());
+            row.createCell(9).setCellValue(student.getFatherName());
+            row.createCell(10).setCellValue(student.getMotherName());
+            row.createCell(11).setCellValue(student.getFatherContactNumber());
+            row.createCell(12).setCellValue(student.getCaste());
+            row.createCell(13).setCellValue(student.getApaarId());
+            row.createCell(14).setCellValue(student.getAadharCardNo());
+            row.createCell(15).setCellValue(student.getSamagraId());
+            row.createCell(16).setCellValue(student.getFamilyId());
+            row.createCell(17).setCellValue(student.getScholarNo());
+            row.createCell(18).setCellValue(student.getFatherOccupation());
+            row.createCell(19).setCellValue(student.getFatherSalary());
+            row.createCell(20).setCellValue(student.getPostalCode());
+            row.createCell(21).setCellValue(student.getBankName());
+            row.createCell(22).setCellValue(student.getBankAccountNo());
+            row.createCell(23).setCellValue(student.getIfscCode());
+            row.createCell(24).setCellValue(student.getBranch());
+            row.createCell(25).setCellValue(student.getPenNumber());
+            row.createCell(26).setCellValue(student.getClassName());
+            row.createCell(27).setCellValue(student.getSectionName());
+            row.createCell(28).setCellValue(student.getAcademicYear());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         workbook.write(out);
         workbook.close();
         return out.toByteArray();
+    }
+
+    @Override
+    public List<StudentExcelDTO> getFilteredStudentsForExcel(Long schoolId, Long classId, Long sectionId, Long academicYearId) {
+        List<Student> students = studentRepository.findByFilters(schoolId, classId, sectionId, null, null, academicYearId);
+        return students.stream().map(StudentExcelDTO::fromEntity).collect(Collectors.toList());
     }
 
     @Override

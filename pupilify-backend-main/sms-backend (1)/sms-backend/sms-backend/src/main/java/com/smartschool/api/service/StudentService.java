@@ -1,5 +1,6 @@
 package com.smartschool.api.service;
 
+import com.smartschool.api.dto.StudentExcelDTO;
 import com.smartschool.api.entity.Student;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -59,5 +60,7 @@ public interface StudentService {
 
     List<Student> getFilteredStudents(Long schoolId, Long classId, Long sectionId, String gender, String caste, Long academicYearId);
 
-    byte[] generateStudentReportExcel(List<Student> students) throws IOException;
+    byte[] generateStudentReportExcel(List<StudentExcelDTO> students) throws IOException;
+
+    List<StudentExcelDTO> getFilteredStudentsForExcel(Long schoolId, Long classId, Long sectionId, Long academicYearId);
 }
