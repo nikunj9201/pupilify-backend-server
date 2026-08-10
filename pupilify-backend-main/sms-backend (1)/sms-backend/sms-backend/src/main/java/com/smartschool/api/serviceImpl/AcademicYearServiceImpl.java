@@ -2,6 +2,7 @@ package com.smartschool.api.serviceImpl;
 
 import com.smartschool.api.dto.AcademicYearChangeRequest;
 import com.smartschool.api.dto.AcademicYearStatusResponse;
+import com.smartschool.api.dto.StudentExcelDTO;
 import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
 import com.smartschool.api.service.AcademicYearService;
@@ -21,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -130,7 +132,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             byte[] feesExcel       = buildFeesExcel(school.getId(), oldYearId);
             byte[] expensesExcel   = buildExpensesExcel(school.getId(), oldYearId);
             List<Student> students = studentRepository.findBySchoolIdAndIsActiveTrue(schoolId);
-            byte[] studentsExcel   = studentService.generateStudentReportExcel(students);
+            List<StudentExcelDTO> studentDTOs = students.stream().map(StudentExcelDTO::fromEntity).collect(Collectors.toList());
+            byte[] studentsExcel   = studentService.generateStudentReportExcel(studentDTOs);
 
             // 2. LAPTOP PE DOWNLOAD KE LIYE SERVER PE SAVE KARO
             saveExcelToLocalFolder(school.getSchoolName(), "Attendance", oldYearStr, attendanceExcel);
