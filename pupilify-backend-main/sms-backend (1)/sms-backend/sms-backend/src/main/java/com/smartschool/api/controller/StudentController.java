@@ -29,13 +29,16 @@ public class StudentController {
     private StudentService studentService;
 
     @GetMapping("/export-excel/{schoolId}")
-    public ResponseEntity<byte[]> exportStudentsToExcel(
+    public ResponseEntity<?> exportStudentsToExcel(
             @PathVariable Long schoolId,
             @RequestParam(required = false) Long classId,
             @RequestParam(required = false) Long sectionId,
             @RequestParam Long academicYearId) {
         try {
             List<com.smartschool.api.dto.StudentExcelDTO> students = studentService.getFilteredStudentsForExcel(schoolId, classId, sectionId, academicYearId);
+            if (students.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No students found for the selected criteria.");
+            }
             byte[] excelData = studentService.generateStudentReportExcel(students);
 
             HttpHeaders headers = new HttpHeaders();
