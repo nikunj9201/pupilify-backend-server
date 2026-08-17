@@ -9,4 +9,6 @@ public interface StudentBusAssignmentRepository extends JpaRepository<StudentBus
     Optional<StudentBusAssignment> findByStudentIdAndAcademicYearIdAndActiveTrue(Long studentId, Long academicYearId);
     List<StudentBusAssignment> findByStudent_School_IdAndAcademicYearIdAndActiveTrue(Long schoolId, Long academicYearId);
     List<StudentBusAssignment> findByStoppage_Route_Id(Long routeId);
+    List<StudentBusAssignment> findAllByStoppage_Route_Bus_Id(Long busId);
+    Optional<StudentBusAssignment> findByStudentId(Long studentId);
 }

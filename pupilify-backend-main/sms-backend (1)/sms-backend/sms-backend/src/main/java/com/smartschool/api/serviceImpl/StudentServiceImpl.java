@@ -67,7 +67,11 @@ public class StudentServiceImpl implements StudentService {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(student.getId());
             row.createCell(1).setCellValue(student.getEnrollmentId());
-            row.createCell(2).setCellValue(student.getRollNumber());
+            if (student.getRollNumber() != null) {
+                row.createCell(2).setCellValue(student.getRollNumber());
+            } else {
+                row.createCell(2).setCellValue("");
+            }
             row.createCell(3).setCellValue(student.getName());
             row.createCell(4).setCellValue(student.getGender());
             row.createCell(5).setCellValue(student.getPhoneNo());

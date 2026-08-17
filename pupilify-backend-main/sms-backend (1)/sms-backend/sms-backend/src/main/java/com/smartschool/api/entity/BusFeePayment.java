@@ -2,7 +2,8 @@ package com.smartschool.api.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDate;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bus_fee_payments")
@@ -17,20 +18,15 @@ public class BusFeePayment {
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "academic_year_id", nullable = false)
-    private AcademicYearConfig academicYear;
+    @JoinColumn(name = "bus_fee_structure_id", nullable = false)
+    private BusFeeStructure busFeeStructure;
 
     @Column(nullable = false)
     private double amountPaid;
 
-    private LocalDate paymentDate;
+    @CreationTimestamp
+    private LocalDateTime paymentDate;
 
     private String paymentMode;
-
     private String receiptNumber;
-
-    @PrePersist
-    protected void onCreate() {
-        this.paymentDate = LocalDate.now();
-    }
 }
