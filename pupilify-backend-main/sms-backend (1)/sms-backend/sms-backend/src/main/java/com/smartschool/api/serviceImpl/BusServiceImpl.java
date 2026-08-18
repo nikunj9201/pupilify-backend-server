@@ -148,7 +148,7 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public List<BusAssignmentDTO> getAssignmentsByRoute(Long routeId) {
-        return assignmentRepository.findByStoppage_Route_Id(routeId).stream()
+        return assignmentRepository.findByStoppage_Route_IdAndActiveTrue(routeId).stream()
                 .map(assignment -> {
                     BusAssignmentDTO dto = new BusAssignmentDTO();
                     dto.setAssignmentId(assignment.getId());
