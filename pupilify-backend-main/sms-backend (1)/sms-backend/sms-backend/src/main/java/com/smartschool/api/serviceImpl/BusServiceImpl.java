@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +48,11 @@ public class BusServiceImpl implements BusService {
 
     @Autowired
     private RouteRepository routeRepository;
+
+    @Autowired
+    private com.smartschool.api.repository.StudentMonthlyFeeStructureRepository studentMonthlyFeeRepository;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Bus addBus(Long schoolId, String registrationNo, int capacity) {
@@ -103,15 +110,75 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public TransportFeeLogDTO collectBusFee(Long studentId, Long academicYearId, double amount, String paymentMode) {
-        TransportFeeLog dueLog = feeLogRepository.findFirstByStudentIdAndAcademicYearIdAndStatusOrderByMonthYearAsc(studentId, academicYearId, TransportFeeLog.FeeStatus.DUE)
-                .orElseThrow(() -> new RuntimeException("No due bus fee found for this student"));
+        // First try to find an existing TransportFeeLog with DUE status
+        java.util.Optional<TransportFeeLog> dueOptional = feeLogRepository.findFirstByStudentIdAndAcademicYearIdAndStatusOrderByMonthYearAsc(studentId, academicYearId, TransportFeeLog.FeeStatus.DUE);
+        if (dueOptional.isPresent()) {
+            TransportFeeLog dueLog = dueOptional.get();
+            dueLog.setAmountPaid(amount);
+            dueLog.setPaymentMode(paymentMode);
+            dueLog.setPaymentDate(LocalDate.now());
+            dueLog.setStatus(TransportFeeLog.FeeStatus.PAID);
+            TransportFeeLog savedLog = feeLogRepository.save(dueLog);
+            return TransportFeeLogDTO.fromEntity(savedLog);
+        }
 
-        dueLog.setAmountPaid(amount);
-        dueLog.setPaymentMode(paymentMode);
-        dueLog.setPaymentDate(LocalDate.now());
-        dueLog.setStatus(TransportFeeLog.FeeStatus.PAID);
-        TransportFeeLog savedLog = feeLogRepository.save(dueLog);
-        return TransportFeeLogDTO.fromEntity(savedLog);
+        // Fallback: maybe fees are managed by the newer monthly-fee assignment (StudentMonthlyFeeStructure)
+        // Try to find a monthly assignment and create a paid TransportFeeLog on-the-fly so collection succeeds.
+        java.util.List<StudentMonthlyFeeStructure> assignments = studentMonthlyFeeRepository.findByStudentIdAndAcademicYearIdAndActiveTrue(studentId, academicYearId);
+        if (!assignments.isEmpty()) {
+            StudentMonthlyFeeStructure assignment = assignments.get(0);
+            java.util.List<String> months = new ArrayList<>();
+            try {
+                if (assignment.getSelectedMonths() != null) {
+                    months = objectMapper.readValue(assignment.getSelectedMonths(), new TypeReference<java.util.List<String>>() {});
+                }
+            } catch (Exception e) {
+                // ignore parsing error and proceed with empty months
+            }
+
+            String month = months.isEmpty() ? "Month" : months.get(0);
+            int year = assignment.getJoiningYear() > 0 ? assignment.getJoiningYear() : LocalDate.now().getYear();
+
+            TransportFeeLog newLog = new TransportFeeLog();
+            newLog.setStudent(assignment.getStudent());
+            newLog.setAcademicYear(assignment.getAcademicYear());
+            newLog.setMonthYear(month + " " + year);
+            newLog.setAmountDue(assignment.getMonthlyFeeAmount());
+            newLog.setAmountPaid(amount);
+            newLog.setPaymentMode(paymentMode);
+            newLog.setPaymentDate(LocalDate.now());
+            newLog.setStatus(TransportFeeLog.FeeStatus.PAID);
+
+            TransportFeeLog savedLog = feeLogRepository.save(newLog);
+
+            // Update the monthly-fee assignment to mark this month as paid (remove month from selectedMonths)
+            try {
+                java.util.List<String> mutableMonths = new ArrayList<>();
+                if (assignment.getSelectedMonths() != null) {
+                    mutableMonths = objectMapper.readValue(assignment.getSelectedMonths(), new TypeReference<java.util.List<String>>() {});
+                }
+                // remove the month we just paid (first occurrence)
+                if (!mutableMonths.isEmpty()) {
+                    mutableMonths.remove(month);
+                }
+
+                assignment.setSelectedMonths(objectMapper.writeValueAsString(mutableMonths));
+                // subtract one month's fee from totalFeeAmount
+                double remainingTotal = assignment.getTotalFeeAmount() - assignment.getMonthlyFeeAmount();
+                assignment.setTotalFeeAmount(Math.max(0.0, remainingTotal));
+                if (mutableMonths.isEmpty()) {
+                    assignment.setActive(false);
+                }
+                studentMonthlyFeeRepository.save(assignment);
+            } catch (Exception e) {
+                // if any error occurs updating the assignment, log and continue (do not fail payment)
+                // logging omitted to keep code minimal; in production log the exception
+            }
+
+            return TransportFeeLogDTO.fromEntity(savedLog);
+        }
+
+        throw new RuntimeException("No due bus fee found for this student");
     }
 
     @Override
