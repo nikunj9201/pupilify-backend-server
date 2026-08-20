@@ -66,6 +66,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/attendance/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // TIMETABLE APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles
                         .requestMatchers("/api/admin/timetable/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
+
+                        // busfees
+                        .requestMatchers("/api/bus-monthly-fees/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
+
+
                         // EXAMS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see exam schedule)
                         .requestMatchers("/api/admin/exams/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // RESULTS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see their results)

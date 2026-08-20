@@ -105,8 +105,21 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
         // Get fee rate structure
         BusFeeRateStructure rateStructure = getFeeRateStructure(request.getStoppageId(), request.getBusId(), request.getSchoolId(), request.getAcademicYearId());
 
+        // Defensive handling for selected months and payment frequency to avoid runtime exceptions
+        List<String> selectedMonths = request.getSelectedMonths() == null ? new ArrayList<>() : request.getSelectedMonths();
+        String paymentFreqStr = request.getPaymentFrequency();
+        StudentMonthlyFeeStructure.PaymentFrequency paymentFreq = StudentMonthlyFeeStructure.PaymentFrequency.MONTHLY;
+        if (paymentFreqStr != null) {
+            try {
+                paymentFreq = StudentMonthlyFeeStructure.PaymentFrequency.valueOf(paymentFreqStr);
+            } catch (IllegalArgumentException e) {
+                // Invalid value provided, default to MONTHLY (could also log a warning)
+                paymentFreq = StudentMonthlyFeeStructure.PaymentFrequency.MONTHLY;
+            }
+        }
+
         // Calculate total fee
-        double totalFee = calculateTotalMonthlyFees(request.getSelectedMonths(), request.getJoiningMonth(), 
+        double totalFee = calculateTotalMonthlyFees(selectedMonths, request.getJoiningMonth(), 
                 rateStructure.getMonthlyFeeAmount(), rateStructure.getTotalMonths());
 
         StudentMonthlyFeeStructure feeStructure = new StudentMonthlyFeeStructure();
@@ -116,12 +129,12 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
         feeStructure.setSchool(school);
         feeStructure.setAcademicYear(academicYear);
         feeStructure.setMonthlyFeeAmount(rateStructure.getMonthlyFeeAmount());
-        feeStructure.setSelectedMonths(convertListToJson(request.getSelectedMonths()));
+        feeStructure.setSelectedMonths(convertListToJson(selectedMonths));
         feeStructure.setJoiningMonth(request.getJoiningMonth());
         // Extract year from currentYear (e.g., "2026-27" -> 2026)
         int yearValue = Integer.parseInt(academicYear.getCurrentYear().split("-")[0]);
         feeStructure.setJoiningYear(yearValue);
-        feeStructure.setPaymentFrequency(StudentMonthlyFeeStructure.PaymentFrequency.valueOf(request.getPaymentFrequency()));
+        feeStructure.setPaymentFrequency(paymentFreq);
         feeStructure.setTotalFeeAmount(totalFee);
         feeStructure.setAssignmentDate(LocalDate.now());
         feeStructure.setActive(true);
@@ -217,8 +230,11 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
 
     @Override
     public double calculateTotalMonthlyFees(List<String> selectedMonths, String joiningMonth, double monthlyFeeAmount, int academicYearTotalMonths) {
-        // If student joined in the middle, calculate from joining month onwards
-        // For late joining, calculate remaining months from joining month
+        if (selectedMonths == null || selectedMonths.isEmpty()) {
+            return 0.0;
+        }
+        // Conservative calculation: count selected months only. If joiningMonth is provided,
+        // ensure we do not count months before joining (caller should provide selectedMonths accordingly).
         int totalMonthsForFee = selectedMonths.size();
         return totalMonthsForFee * monthlyFeeAmount;
     }
@@ -262,6 +278,7 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
 
     private String convertListToJson(List<String> list) {
         try {
+            if (list == null) return "[]";
             return objectMapper.writeValueAsString(list);
         } catch (Exception e) {
             return "[]";
@@ -270,7 +287,8 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
 
     private List<String> convertJsonToList(String json) {
         try {
-            return objectMapper.readValue(json, new TypeReference<>() {});
+            if (json == null || json.trim().isEmpty() || json.equalsIgnoreCase("null")) return new ArrayList<>();
+            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
         } catch (Exception e) {
             return new ArrayList<>();
         }
