@@ -44,7 +44,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Stoppage addStoppage(Long schoolId, Long routeId, String stopName, double fee) {
+    public Stoppage addStoppage(Long schoolId, Long routeId, String stopName) {
         Route route = routeRepository.findById(routeId).orElseThrow(() -> new RuntimeException("Route not found"));
         if (!route.getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Route does not belong to this school");
@@ -52,7 +52,6 @@ public class RouteServiceImpl implements RouteService {
         Stoppage stoppage = new Stoppage();
         stoppage.setRoute(route);
         stoppage.setStopName(stopName);
-        stoppage.setFee(fee);
         return stoppageRepository.save(stoppage);
     }
 
@@ -71,13 +70,12 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Stoppage updateStoppage(Long schoolId, Long stoppageId, String stopName, double fee) {
+    public Stoppage updateStoppage(Long schoolId, Long stoppageId, String stopName) {
         Stoppage stoppage = stoppageRepository.findById(stoppageId).orElseThrow(() -> new RuntimeException("Stoppage not found"));
         if (!stoppage.getRoute().getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Stoppage does not belong to this school");
         }
         stoppage.setStopName(stopName);
-        stoppage.setFee(fee);
         return stoppageRepository.save(stoppage);
     }
 

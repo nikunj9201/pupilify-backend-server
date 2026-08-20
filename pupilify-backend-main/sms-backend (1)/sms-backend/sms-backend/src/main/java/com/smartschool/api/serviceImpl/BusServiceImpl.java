@@ -76,7 +76,7 @@ public class BusServiceImpl implements BusService {
         newAssignment.setStudent(student);
         newAssignment.setStoppage(stoppage);
         newAssignment.setAcademicYear(academicYear);
-        newAssignment.setTransportFee(stoppage.getFee());
+        //newAssignment.setTransportFee(stoppage.getFee());
         newAssignment.setActive(true);
 
         return assignmentRepository.save(newAssignment);
@@ -157,7 +157,7 @@ public class BusServiceImpl implements BusService {
                     dto.setName(assignment.getStudent().getName());
                     dto.setPhoneNo(assignment.getStudent().getPhoneNo());
                     dto.setStopName(assignment.getStoppage().getStopName());
-                    dto.setFee(assignment.getStoppage().getFee());
+                    //dto.setFee(assignment.getStoppage().getFee());
                     return dto;
                 })
                 .collect(Collectors.toList());

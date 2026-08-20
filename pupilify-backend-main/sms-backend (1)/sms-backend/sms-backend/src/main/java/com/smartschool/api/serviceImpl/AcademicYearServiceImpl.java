@@ -5,10 +5,7 @@ import com.smartschool.api.dto.AcademicYearStatusResponse;
 import com.smartschool.api.dto.StudentExcelDTO;
 import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
-import com.smartschool.api.service.AcademicYearService;
-import com.smartschool.api.service.BusFeeService;
-import com.smartschool.api.service.EmailService;
-import com.smartschool.api.service.StudentService;
+import com.smartschool.api.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -46,6 +43,7 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     @Autowired private BusFeeService busFeeService;
     @Autowired private BusFeeStructureRepository busFeeStructureRepository;
     @Autowired private BusFeePaymentRepository busFeePaymentRepository;
+    @Autowired private BusFeeReportService busFeeReportService;
 
     private final String BACKUP_DIR = "uploads/backups/";
 
@@ -157,6 +155,15 @@ public class AcademicYearServiceImpl implements AcademicYearService {
                 emailSuccess = true;
             } catch (Exception mailEx) {
                 log.error("Email fail: {}", mailEx.getMessage());
+            }
+
+            // 3.1 SEND BUS FEES DUE REPORT (NEW FEATURE)
+            try {
+                busFeeReportService.sendBusFeesReportEmail(school.getId(), oldYearId, school.getMailId());
+                log.info("Bus fees due report sent successfully to: {}", school.getMailId());
+            } catch (Exception busMailEx) {
+                log.warn("Bus fees report email failed: {}", busMailEx.getMessage());
+                // Don't fail the entire process if bus fees report fails
             }
 
             // 4. SAVE DUES & MIGRATE STUDENTS

@@ -1,0 +1,851 @@
+{
+  "info": {
+    "_postman_id": "bus-management-collection",
+    "name": "Bus Management System - Complete API Collection",
+    "description": "Complete Postman collection for Bus Management System with monthly fee structure",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Bus Management",
+      "item": [
+        {
+          "name": "Add Bus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/admin/{{schoolId}}/add?registrationNo=MH12AB1234&capacity=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "admin", "{{schoolId}}", "add"],
+              "query": [
+                {
+                  "key": "registrationNo",
+                  "value": "MH12AB1234"
+                },
+                {
+                  "key": "capacity",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Buses by School",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/admin/school/{{schoolId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "admin", "school", "{{schoolId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Bus",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/admin/delete/{{schoolId}}/{{busId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "admin", "delete", "{{schoolId}}", "{{busId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Routes & Stoppages",
+      "item": [
+        {
+          "name": "Create Route",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/routes/{{schoolId}}/create?busId={{busId}}&routeName=Route A",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "routes", "{{schoolId}}", "create"],
+              "query": [
+                {
+                  "key": "busId",
+                  "value": "{{busId}}"
+                },
+                {
+                  "key": "routeName",
+                  "value": "Route A"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Routes by Bus",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/routes/{{schoolId}}/bus/{{busId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "routes", "{{schoolId}}", "bus", "{{busId}}"]
+            }
+          }
+        },
+        {
+          "name": "Add Stoppage",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/routes/{{schoolId}}/{{routeId}}/stoppages/add?stopName=Stop 1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "routes", "{{schoolId}}", "{{routeId}}", "stoppages", "add"],
+              "query": [
+                {
+                  "key": "stopName",
+                  "value": "Stop 1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Stoppages by Route",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/routes/{{schoolId}}/{{routeId}}/stoppages",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "routes", "{{schoolId}}", "{{routeId}}", "stoppages"]
+            }
+          }
+        },
+        {
+          "name": "Update Stoppage",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/routes/{{schoolId}}/stoppages/{{stoppageId}}?stopName=Stop 1 Updated",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "routes", "{{schoolId}}", "stoppages", "{{stoppageId}}"],
+              "query": [
+                {
+                  "key": "stopName",
+                  "value": "Stop 1 Updated"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Stoppage",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/routes/{{schoolId}}/stoppages/{{stoppageId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "routes", "{{schoolId}}", "stoppages", "{{stoppageId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Route",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/routes/{{schoolId}}/{{routeId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "routes", "{{schoolId}}", "{{routeId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bus Fee Rate Structure",
+      "item": [
+        {
+          "name": "Create Fee Rate Structure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/rate-structure/create?stoppageId={{stoppageId}}&busId={{busId}}&schoolId={{schoolId}}&academicYearId={{academicYearId}}&monthlyFeeAmount=100&totalMonths=12&academicYearStartMonth=July",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "rate-structure", "create"],
+              "query": [
+                {
+                  "key": "stoppageId",
+                  "value": "{{stoppageId}}"
+                },
+                {
+                  "key": "busId",
+                  "value": "{{busId}}"
+                },
+                {
+                  "key": "schoolId",
+                  "value": "{{schoolId}}"
+                },
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                },
+                {
+                  "key": "monthlyFeeAmount",
+                  "value": "100"
+                },
+                {
+                  "key": "totalMonths",
+                  "value": "12"
+                },
+                {
+                  "key": "academicYearStartMonth",
+                  "value": "July"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Fee Rate Structures by Bus",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/rate-structure/bus/{{busId}}?schoolId={{schoolId}}&academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "rate-structure", "bus", "{{busId}}"],
+              "query": [
+                {
+                  "key": "schoolId",
+                  "value": "{{schoolId}}"
+                },
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Fee Rate Structure",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/rate-structure/{{rateStructureId}}?monthlyFeeAmount=120",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "rate-structure", "{{rateStructureId}}"],
+              "query": [
+                {
+                  "key": "monthlyFeeAmount",
+                  "value": "120"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Fee Rate Structure",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/rate-structure/{{rateStructureId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "rate-structure", "{{rateStructureId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student Monthly Fee Assignment",
+      "item": [
+        {
+          "name": "Assign Student to Bus with Monthly Fees",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": {{studentId}},\n  \"stoppageId\": {{stoppageId}},\n  \"busId\": {{busId}},\n  \"schoolId\": {{schoolId}},\n  \"academicYearId\": {{academicYearId}},\n  \"selectedMonths\": [\"July\", \"August\", \"September\", \"October\", \"November\", \"December\", \"January\", \"February\", \"March\", \"April\"],\n  \"joiningMonth\": \"July\",\n  \"paymentFrequency\": \"MONTHLY\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/assign-student",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "assign-student"]
+            }
+          }
+        },
+        {
+          "name": "Assign Student with Late Joining (Example: Joined in October)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": {{studentId}},\n  \"stoppageId\": {{stoppageId}},\n  \"busId\": {{busId}},\n  \"schoolId\": {{schoolId}},\n  \"academicYearId\": {{academicYearId}},\n  \"selectedMonths\": [\"October\", \"November\", \"December\", \"January\", \"February\", \"March\", \"April\"],\n  \"joiningMonth\": \"October\",\n  \"paymentFrequency\": \"MONTHLY\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/assign-student",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "assign-student"]
+            }
+          }
+        },
+        {
+          "name": "Get Student Fee Assignment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/assignment/{{studentId}}?academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "assignment", "{{studentId}}"],
+              "query": [
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Student Fee Assignments by Bus",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/assignments/bus/{{busId}}?schoolId={{schoolId}}&academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "assignments", "bus", "{{busId}}"],
+              "query": [
+                {
+                  "key": "schoolId",
+                  "value": "{{schoolId}}"
+                },
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Student Fee Assignments by Stoppage",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/assignments/stoppage/{{stoppageId}}?academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "assignments", "stoppage", "{{stoppageId}}"],
+              "query": [
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Student Fee Assignment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/assignment/{{assignmentId}}?selectedMonths=July&selectedMonths=August&selectedMonths=September&selectedMonths=October&paymentFrequency=YEARLY",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "assignment", "{{assignmentId}}"],
+              "query": [
+                {
+                  "key": "selectedMonths",
+                  "value": "July"
+                },
+                {
+                  "key": "selectedMonths",
+                  "value": "August"
+                },
+                {
+                  "key": "selectedMonths",
+                  "value": "September"
+                },
+                {
+                  "key": "selectedMonths",
+                  "value": "October"
+                },
+                {
+                  "key": "paymentFrequency",
+                  "value": "YEARLY"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Student Fee Assignment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/assignment/{{assignmentId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "assignment", "{{assignmentId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Get Monthly Fees Due Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/due-report/{{schoolId}}?academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "due-report", "{{schoolId}}"],
+              "query": [
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Student Monthly Fees Breakdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bus-monthly-fees/breakdown/{{studentId}}?academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bus-monthly-fees", "breakdown", "{{studentId}}"],
+              "query": [
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Bus Fee Due Report (Old System)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/admin/due-report/{{schoolId}}?academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "admin", "due-report", "{{schoolId}}"],
+              "query": [
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student Bus Assignment (Old System)",
+      "item": [
+        {
+          "name": "Assign Student to Bus",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/assign-student?studentId={{studentId}}&stoppageId={{stoppageId}}&academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "assign-student"],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                },
+                {
+                  "key": "stoppageId",
+                  "value": "{{stoppageId}}"
+                },
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Unassign Student from Bus",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/unassign-student/{{assignmentId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "unassign-student", "{{assignmentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Student Bus Assignment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/student-assignment/{{studentId}}?academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "student-assignment", "{{studentId}}"],
+              "query": [
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Assignments by Route",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/assignments/route/{{routeId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "assignments", "route", "{{routeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Fee History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/fee-history/{{studentId}}?academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "fee-history", "{{studentId}}"],
+              "query": [
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fee Collection",
+      "item": [
+        {
+          "name": "Collect Bus Fee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/buses/admin/collect-fee?studentId={{studentId}}&academicYearId={{academicYearId}}&amount=100&paymentMode=CASH",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "admin", "collect-fee"],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                },
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                },
+                {
+                  "key": "amount",
+                  "value": "100"
+                },
+                {
+                  "key": "paymentMode",
+                  "value": "CASH"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate Monthly Fees",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\"July\", \"August\", \"September\", \"October\", \"November\", \"December\"]"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/buses/admin/generate-monthly-fees?schoolId={{schoolId}}&academicYearId={{academicYearId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "buses", "admin", "generate-monthly-fees"],
+              "query": [
+                {
+                  "key": "schoolId",
+                  "value": "{{schoolId}}"
+                },
+                {
+                  "key": "academicYearId",
+                  "value": "{{academicYearId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "your_jwt_token_here",
+      "type": "string"
+    },
+    {
+      "key": "schoolId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "busId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "routeId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "stoppageId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "academicYearId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "assignmentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "rateStructureId",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}
+

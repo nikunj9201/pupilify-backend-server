@@ -15,8 +15,6 @@ public class Stoppage {
     @Column(nullable = false)
     private String stopName;
 
-    @Column(nullable = false)
-    private double fee;
 
     @ManyToOne
     @JoinColumn(name = "route_id", nullable = false)
