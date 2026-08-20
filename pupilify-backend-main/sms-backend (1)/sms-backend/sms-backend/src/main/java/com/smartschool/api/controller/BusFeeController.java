@@ -19,8 +19,11 @@ public class BusFeeController {
     private BusFeeService busFeeService;
 
     @PostMapping("/admin/structure/bulk")
-    public ResponseEntity<List<BusFeeStructure>> createBulkFeeStructure(@RequestParam Long schoolId, @RequestParam Long busId, @RequestBody List<BusFeeStructure> feeStructures) {
-        return ResponseEntity.ok(busFeeService.createBulkFeeStructure(schoolId, busId, feeStructures));
+    public ResponseEntity<List<BusFeeStructure>> createBulkFeeStructure(@RequestParam Long schoolId,
+                                                                         @RequestParam Long busId,
+                                                                         @RequestParam Long academicYearId,
+                                                                         @RequestBody List<BusFeeStructure> feeStructures) {
+        return ResponseEntity.ok(busFeeService.createBulkFeeStructure(schoolId, busId, academicYearId, feeStructures));
     }
 
     @PutMapping("/admin/structure/{structureId}")

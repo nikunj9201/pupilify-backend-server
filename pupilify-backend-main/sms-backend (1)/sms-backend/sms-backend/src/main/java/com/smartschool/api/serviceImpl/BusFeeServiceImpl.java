@@ -37,14 +37,20 @@ public class BusFeeServiceImpl implements BusFeeService {
     @Autowired
     private StudentBusAssignmentRepository assignmentRepository;
 
+    @Autowired
+    private AcademicYearConfigRepository academicYearRepository;
+
     @Override
-    public List<BusFeeStructure> createBulkFeeStructure(Long schoolId, Long busId, List<BusFeeStructure> feeStructures) {
+    public List<BusFeeStructure> createBulkFeeStructure(Long schoolId, Long busId, Long academicYearId, List<BusFeeStructure> feeStructures) {
         School school = schoolRepository.findById(schoolId).orElseThrow(() -> new RuntimeException("School not found"));
         Bus bus = busRepository.findById(busId).orElseThrow(() -> new RuntimeException("Bus not found"));
+        AcademicYearConfig academicYear = academicYearRepository.findById(academicYearId)
+                .orElseThrow(() -> new RuntimeException("Academic year not found"));
 
         for (BusFeeStructure structure : feeStructures) {
             structure.setSchool(school);
             structure.setBus(bus);
+            structure.setAcademicYear(academicYear);
         }
         return structureRepository.saveAll(feeStructures);
     }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface BusFeeService {
-    List<BusFeeStructure> createBulkFeeStructure(Long schoolId, Long busId, List<BusFeeStructure> feeStructures);
+    List<BusFeeStructure> createBulkFeeStructure(Long schoolId, Long busId, Long academicYearId, List<BusFeeStructure> feeStructures);
     BusFeeStructure updateFeeStructure(Long structureId, double amount);
     void deleteFeeStructure(Long structureId);
     BusFeePayment collectFee(String studentIdentifier, double amount, String paymentMode);
