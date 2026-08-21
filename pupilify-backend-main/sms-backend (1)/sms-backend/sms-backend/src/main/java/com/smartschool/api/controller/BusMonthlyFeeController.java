@@ -77,6 +77,12 @@ public class BusMonthlyFeeController {
         return ResponseEntity.ok(busMonthlyFeeService.getStudentFeeAssignment(studentId, academicYearId));
     }
 
+    @GetMapping("/student/{studentId}/history")
+    public ResponseEntity<List<StudentMonthlyFeeStructureDTO>> getStudentFeeHistory(
+            @PathVariable Long studentId) {
+        return ResponseEntity.ok(busMonthlyFeeService.getStudentFeeHistory(studentId));
+    }
+
     @GetMapping("/assignments/bus/{busId}")
     public ResponseEntity<List<StudentMonthlyFeeStructureDTO>> getStudentFeeAssignmentsByBus(
             @PathVariable Long busId,

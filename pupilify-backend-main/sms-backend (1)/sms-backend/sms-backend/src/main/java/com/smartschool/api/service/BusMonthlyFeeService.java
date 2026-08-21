@@ -24,6 +24,7 @@ public interface BusMonthlyFeeService {
     StudentMonthlyFeeStructureDTO getStudentFeeAssignment(Long studentId, Long academicYearId);
     List<StudentMonthlyFeeStructureDTO> getStudentFeeAssignmentsByBus(Long busId, Long schoolId, Long academicYearId);
     List<StudentMonthlyFeeStructureDTO> getStudentFeeAssignmentsByStoppage(Long stoppageId, Long academicYearId);
+    List<StudentMonthlyFeeStructureDTO> getStudentFeeHistory(Long studentId);
     void deleteStudentFeeAssignment(Long assignmentId);
 
     // Due Reports

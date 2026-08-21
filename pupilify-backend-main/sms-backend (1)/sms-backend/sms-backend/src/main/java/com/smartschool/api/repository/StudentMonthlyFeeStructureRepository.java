@@ -14,5 +14,6 @@ public interface StudentMonthlyFeeStructureRepository extends JpaRepository<Stud
     List<StudentMonthlyFeeStructure> findByBusIdAndSchoolIdAndAcademicYearIdAndActiveTrue(Long busId, Long schoolId, Long academicYearId);
     List<StudentMonthlyFeeStructure> findByStoppageIdAndAcademicYearIdAndActiveTrue(Long stoppageId, Long academicYearId);
     List<StudentMonthlyFeeStructure> findBySchoolIdAndAcademicYearIdAndActiveTrue(Long schoolId, Long academicYearId);
+    List<StudentMonthlyFeeStructure> findByStudentId(Long studentId);
 }
 

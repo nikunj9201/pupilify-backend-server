@@ -181,6 +181,14 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
     }
 
     @Override
+    public List<StudentMonthlyFeeStructureDTO> getStudentFeeHistory(Long studentId) {
+        return studentFeeRepository.findByStudentId(studentId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteStudentFeeAssignment(Long assignmentId) {
         StudentMonthlyFeeStructure feeStructure = studentFeeRepository.findById(assignmentId).orElseThrow(() -> new RuntimeException("Assignment not found"));
         feeStructure.setActive(false);
