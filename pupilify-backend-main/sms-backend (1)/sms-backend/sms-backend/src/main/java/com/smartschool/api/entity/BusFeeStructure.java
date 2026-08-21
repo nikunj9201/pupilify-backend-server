@@ -32,3 +32,4 @@ public class BusFeeStructure {
     @Column(nullable = false)
     private double amount;
 }
+

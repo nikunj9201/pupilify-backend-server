@@ -3,6 +3,7 @@ package com.smartschool.api.controller;
 import com.smartschool.api.dto.BusFeeRateStructureDTO;
 import com.smartschool.api.dto.StudentMonthlyFeeStructureDTO;
 import com.smartschool.api.dto.StudentBusAssignmentRequestDTO;
+import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.BusFeeRateStructure;
 import com.smartschool.api.entity.StudentMonthlyFeeStructure;
 import com.smartschool.api.service.BusMonthlyFeeService;
@@ -78,9 +79,9 @@ public class BusMonthlyFeeController {
     }
 
     @GetMapping("/student/{studentId}/history")
-    public ResponseEntity<List<StudentMonthlyFeeStructureDTO>> getStudentFeeHistory(
+    public ResponseEntity<List<TransportFeeLogDTO>> getStudentFeeHistory(
             @PathVariable Long studentId) {
-        return ResponseEntity.ok(busMonthlyFeeService.getStudentFeeHistory(studentId));
+        return ResponseEntity.ok(busMonthlyFeeService.getStudentPaymentHistory(studentId));
     }
 
     @GetMapping("/assignments/bus/{busId}")

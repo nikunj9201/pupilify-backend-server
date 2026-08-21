@@ -3,6 +3,7 @@ package com.smartschool.api.service;
 import com.smartschool.api.dto.BusFeeRateStructureDTO;
 import com.smartschool.api.dto.StudentMonthlyFeeStructureDTO;
 import com.smartschool.api.dto.StudentBusAssignmentRequestDTO;
+import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.BusFeeRateStructure;
 import com.smartschool.api.entity.StudentMonthlyFeeStructure;
 
@@ -25,6 +26,7 @@ public interface BusMonthlyFeeService {
     List<StudentMonthlyFeeStructureDTO> getStudentFeeAssignmentsByBus(Long busId, Long schoolId, Long academicYearId);
     List<StudentMonthlyFeeStructureDTO> getStudentFeeAssignmentsByStoppage(Long stoppageId, Long academicYearId);
     List<StudentMonthlyFeeStructureDTO> getStudentFeeHistory(Long studentId);
+    List<TransportFeeLogDTO> getStudentPaymentHistory(Long studentId);
     void deleteStudentFeeAssignment(Long assignmentId);
 
     // Due Reports

@@ -3,6 +3,7 @@ package com.smartschool.api.serviceImpl;
 import com.smartschool.api.dto.BusFeeRateStructureDTO;
 import com.smartschool.api.dto.StudentMonthlyFeeStructureDTO;
 import com.smartschool.api.dto.StudentBusAssignmentRequestDTO;
+import com.smartschool.api.dto.TransportFeeLogDTO;
 import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
 import com.smartschool.api.service.BusMonthlyFeeService;
@@ -38,6 +39,9 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
 
     @Autowired
     private AcademicYearConfigRepository academicYearRepository;
+
+    @Autowired
+    private TransportFeeLogRepository transportFeeLogRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -185,6 +189,14 @@ public class BusMonthlyFeeServiceImpl implements BusMonthlyFeeService {
         return studentFeeRepository.findByStudentId(studentId)
                 .stream()
                 .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TransportFeeLogDTO> getStudentPaymentHistory(Long studentId) {
+        return transportFeeLogRepository.findByStudentId(studentId)
+                .stream()
+                .map(TransportFeeLogDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 

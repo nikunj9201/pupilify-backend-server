@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TransportFeeLogRepository extends JpaRepository<TransportFeeLog, Long> {
+    List<TransportFeeLog> findByStudentId(Long studentId);
     List<TransportFeeLog> findByStudentIdAndAcademicYearId(Long studentId, Long academicYearId);
     Optional<TransportFeeLog> findFirstByStudentIdAndAcademicYearIdAndStatusOrderByMonthYearAsc(Long studentId, Long academicYearId, TransportFeeLog.FeeStatus status);
 }
