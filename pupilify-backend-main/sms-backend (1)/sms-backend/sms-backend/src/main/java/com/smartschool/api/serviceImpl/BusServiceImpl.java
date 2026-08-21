@@ -136,35 +136,52 @@ public class BusServiceImpl implements BusService {
                 // ignore parsing error and proceed with empty months
             }
 
-            String month = months.isEmpty() ? "Month" : months.get(0);
+            if (months.isEmpty()) {
+                throw new RuntimeException("No due months for this student");
+            }
+
             int year = assignment.getJoiningYear() > 0 ? assignment.getJoiningYear() : LocalDate.now().getYear();
+            double monthlyFee = assignment.getMonthlyFeeAmount();
+            double remainingAmount = amount;
+            TransportFeeLog lastLog = null;
 
-            TransportFeeLog newLog = new TransportFeeLog();
-            newLog.setStudent(assignment.getStudent());
-            newLog.setAcademicYear(assignment.getAcademicYear());
-            newLog.setMonthYear(month + " " + year);
-            newLog.setAmountDue(assignment.getMonthlyFeeAmount());
-            newLog.setAmountPaid(amount);
-            newLog.setPaymentMode(paymentMode);
-            newLog.setPaymentDate(LocalDate.now());
-            newLog.setStatus(TransportFeeLog.FeeStatus.PAID);
+            // Create payment logs for each month, distributing the payment amount
+            java.util.List<String> paidMonths = new ArrayList<>();
+            for (String month : months) {
+                if (remainingAmount <= 0) break;
 
-            TransportFeeLog savedLog = feeLogRepository.save(newLog);
+                TransportFeeLog newLog = new TransportFeeLog();
+                newLog.setStudent(assignment.getStudent());
+                newLog.setAcademicYear(assignment.getAcademicYear());
+                newLog.setMonthYear(month + " " + year);
+                newLog.setAmountDue(monthlyFee);
+                
+                // Allocate payment: either the remaining amount or the full month's fee
+                double amountForThisMonth = Math.min(remainingAmount, monthlyFee);
+                newLog.setAmountPaid(amountForThisMonth);
+                newLog.setPaymentMode(paymentMode);
+                newLog.setPaymentDate(LocalDate.now());
+                
+                // Determine status based on payment
+                if (amountForThisMonth >= monthlyFee) {
+                    newLog.setStatus(TransportFeeLog.FeeStatus.PAID);
+                    paidMonths.add(month);
+                } else {
+                    newLog.setStatus(TransportFeeLog.FeeStatus.PARTIALLY_PAID);
+                }
 
-            // Update the monthly-fee assignment to mark this month as paid (remove month from selectedMonths)
+                lastLog = feeLogRepository.save(newLog);
+                remainingAmount -= amountForThisMonth;
+            }
+
+            // Update the monthly-fee assignment to remove paid months and recalculate total fee
             try {
-                java.util.List<String> mutableMonths = new ArrayList<>();
-                if (assignment.getSelectedMonths() != null) {
-                    mutableMonths = objectMapper.readValue(assignment.getSelectedMonths(), new TypeReference<java.util.List<String>>() {});
-                }
-                // remove the month we just paid (first occurrence)
-                if (!mutableMonths.isEmpty()) {
-                    mutableMonths.remove(month);
-                }
+                java.util.List<String> mutableMonths = new ArrayList<>(months);
+                mutableMonths.removeAll(paidMonths);
 
                 assignment.setSelectedMonths(objectMapper.writeValueAsString(mutableMonths));
-                // subtract one month's fee from totalFeeAmount
-                double remainingTotal = assignment.getTotalFeeAmount() - assignment.getMonthlyFeeAmount();
+                // Calculate remaining total fee
+                double remainingTotal = mutableMonths.size() * monthlyFee;
                 assignment.setTotalFeeAmount(Math.max(0.0, remainingTotal));
                 if (mutableMonths.isEmpty()) {
                     assignment.setActive(false);
@@ -175,10 +192,111 @@ public class BusServiceImpl implements BusService {
                 // logging omitted to keep code minimal; in production log the exception
             }
 
-            return TransportFeeLogDTO.fromEntity(savedLog);
+            return TransportFeeLogDTO.fromEntity(lastLog);
         }
 
         throw new RuntimeException("No due bus fee found for this student");
+    }
+
+    @Override
+    public Map<String, Object> collectYearlyBusFee(Long studentId, Long academicYearId, double amount, String paymentMode) {
+        java.util.List<StudentMonthlyFeeStructure> assignments = studentMonthlyFeeRepository.findByStudentIdAndAcademicYearIdAndActiveTrue(studentId, academicYearId);
+        
+        if (assignments.isEmpty()) {
+            throw new RuntimeException("No monthly fee structure found for this student");
+        }
+
+        StudentMonthlyFeeStructure assignment = assignments.get(0);
+        java.util.List<String> months = new ArrayList<>();
+        try {
+            if (assignment.getSelectedMonths() != null) {
+                months = objectMapper.readValue(assignment.getSelectedMonths(), new TypeReference<java.util.List<String>>() {});
+            }
+        } catch (Exception e) {
+            // ignore parsing error
+        }
+
+        if (months.isEmpty()) {
+            throw new RuntimeException("No due months for this student");
+        }
+
+        int year = assignment.getJoiningYear() > 0 ? assignment.getJoiningYear() : LocalDate.now().getYear();
+        double monthlyFee = assignment.getMonthlyFeeAmount();
+        double totalDueAmount = months.size() * monthlyFee;
+        
+        Map<String, Object> paymentSummary = new HashMap<>();
+        paymentSummary.put("studentId", studentId);
+        paymentSummary.put("totalMonthsDue", months.size());
+        paymentSummary.put("monthlyFeeAmount", monthlyFee);
+        paymentSummary.put("totalDueAmount", totalDueAmount);
+        paymentSummary.put("amountPaid", amount);
+        paymentSummary.put("paymentDate", LocalDate.now().toString());
+        paymentSummary.put("paymentMode", paymentMode);
+
+        if (amount < totalDueAmount) {
+            paymentSummary.put("status", "PARTIAL_PAYMENT");
+            paymentSummary.put("remainingDue", totalDueAmount - amount);
+        } else {
+            paymentSummary.put("status", "FULL_PAYMENT");
+            paymentSummary.put("remainingDue", 0.0);
+        }
+
+        java.util.List<Map<String, String>> monthWisePayments = new ArrayList<>();
+        double remainingAmount = amount;
+
+        // Create payment logs for each month
+        java.util.List<String> paidMonths = new ArrayList<>();
+        for (String month : months) {
+            if (remainingAmount <= 0) break;
+
+            Map<String, String> monthPayment = new HashMap<>();
+            monthPayment.put("month", month);
+
+            TransportFeeLog log = new TransportFeeLog();
+            log.setStudent(assignment.getStudent());
+            log.setAcademicYear(assignment.getAcademicYear());
+            log.setMonthYear(month + " " + year);
+            log.setAmountDue(monthlyFee);
+
+            double amountForThisMonth = Math.min(remainingAmount, monthlyFee);
+            log.setAmountPaid(amountForThisMonth);
+            log.setPaymentMode(paymentMode);
+            log.setPaymentDate(LocalDate.now());
+
+            if (amountForThisMonth >= monthlyFee) {
+                log.setStatus(TransportFeeLog.FeeStatus.PAID);
+                monthPayment.put("status", "PAID");
+                paidMonths.add(month);
+            } else {
+                log.setStatus(TransportFeeLog.FeeStatus.PARTIALLY_PAID);
+                monthPayment.put("status", "PARTIALLY_PAID");
+            }
+
+            monthPayment.put("amountPaid", String.valueOf(amountForThisMonth));
+            monthWisePayments.add(monthPayment);
+            feeLogRepository.save(log);
+            remainingAmount -= amountForThisMonth;
+        }
+
+        // Update the monthly-fee assignment
+        try {
+            java.util.List<String> mutableMonths = new ArrayList<>(months);
+            mutableMonths.removeAll(paidMonths);
+
+            assignment.setSelectedMonths(objectMapper.writeValueAsString(mutableMonths));
+            double remainingTotal = mutableMonths.size() * monthlyFee;
+            assignment.setTotalFeeAmount(Math.max(0.0, remainingTotal));
+            if (mutableMonths.isEmpty()) {
+                assignment.setActive(false);
+            }
+            studentMonthlyFeeRepository.save(assignment);
+        } catch (Exception e) {
+            // continue even if update fails
+        }
+
+        paymentSummary.put("monthWisePayments", monthWisePayments);
+        paymentSummary.put("monthsPaid", paidMonths);
+        return paymentSummary;
     }
 
     @Override
