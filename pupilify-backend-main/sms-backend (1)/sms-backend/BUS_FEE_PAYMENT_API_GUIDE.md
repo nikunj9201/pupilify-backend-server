@@ -22,7 +22,7 @@ Updated bus fee collection system to properly handle monthly and yearly fee paym
 ```
 POST http://localhost:8080/api/buses/admin/collect-fee?studentId=1&academicYearId=1&amount=700&paymentMode=CASH
 ```
-
+    
 **Response:**
 ```json
 {
