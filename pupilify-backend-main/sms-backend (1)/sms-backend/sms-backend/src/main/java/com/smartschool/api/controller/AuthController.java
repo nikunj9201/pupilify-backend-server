@@ -4,14 +4,8 @@ import com.smartschool.api.dto.AuthResponse;
 import com.smartschool.api.dto.LoginRequest;
 import com.smartschool.api.dto.LoginResponse;
 import com.smartschool.api.dto.ResetPasswordRequest;
-import com.smartschool.api.entity.School;
-import com.smartschool.api.entity.User;
-import com.smartschool.api.entity.Teacher;
-import com.smartschool.api.entity.Student;
-import com.smartschool.api.repository.SchoolRepository;
-import com.smartschool.api.repository.UserRepository;
-import com.smartschool.api.repository.TeacherRepository;
-import com.smartschool.api.repository.StudentRepository;
+import com.smartschool.api.entity.*;
+import com.smartschool.api.repository.*;
 import com.smartschool.api.service.AuthService;
 import com.smartschool.api.service.StateManagerService;
 import com.smartschool.api.service.DistrictManagerService;
@@ -67,6 +61,9 @@ public class AuthController {
 
     @Autowired
     private PasswordResetService resetService;
+
+    @Autowired
+    private DriverRepository driverRepository;
 
     // ================= NORMAL LOGIN (ADMIN/PRINCIPAL/TEACHER/STUDENT) =================
     @PostMapping("/login")
@@ -224,6 +221,13 @@ public class AuthController {
                     }
 
                     response.put("student", studentMap);
+                }
+            }
+
+            if (fullRole.equals("ROLE_DRIVER")) {
+                Optional<Driver> driverOpt = driverRepository.findByUserId(user.getId());
+                if (driverOpt.isPresent()) {
+                    response.put("driverId", driverOpt.get().getId());
                 }
             }
 

@@ -213,6 +213,7 @@ public class StudentServiceImpl implements StudentService {
         if(details.getBankAccountNo() != null) student.setBankAccountNo(details.getBankAccountNo());
         if(details.getIfscCode() != null) student.setIfscCode(details.getIfscCode());
         if(details.getBranch() != null) student.setBranch(details.getBranch());
+        if(details.getPenNumber() != null) student.setPenNumber(details.getPenNumber());
 
 
         // 2. Files Update (Only if new file is provided)

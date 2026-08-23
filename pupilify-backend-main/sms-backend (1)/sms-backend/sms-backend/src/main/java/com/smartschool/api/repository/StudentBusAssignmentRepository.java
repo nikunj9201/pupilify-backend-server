@@ -2,12 +2,11 @@ package com.smartschool.api.repository;
 
 import com.smartschool.api.entity.StudentBusAssignment;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
-@Repository
 public interface StudentBusAssignmentRepository extends JpaRepository<StudentBusAssignment, Long> {
-    List<StudentBusAssignment> findByStudentIdAndActiveTrue(Long studentId);
-    List<StudentBusAssignment> findByBusIdAndActiveTrue(Long busId);
+    Optional<StudentBusAssignment> findByStudentIdAndAcademicYearIdAndActiveTrue(Long studentId, Long academicYearId);
+    List<StudentBusAssignment> findByStudent_School_IdAndAcademicYearIdAndActiveTrue(Long schoolId, Long academicYearId);
+    List<StudentBusAssignment> findByStoppage_Route_Id(Long routeId);
 }
-

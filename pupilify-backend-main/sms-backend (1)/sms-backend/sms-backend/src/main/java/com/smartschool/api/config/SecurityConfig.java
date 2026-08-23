@@ -72,7 +72,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/results/student/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
                         .requestMatchers(HttpMethod.GET, "/api/admin/results/by-enrollment/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
                         .requestMatchers("/api/admin/results/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
-
+                        .requestMatchers("/api/admin/drivers/**").hasAnyRole("ADMIN", "SUPER_ADMIN","PRINCIPAL","DRIVER")
+                        .requestMatchers("/api/admin/routes/**").hasAnyRole("ADMIN", "SUPER_ADMIN","PRINCIPAL","STUDENT","DRIVER")
+                        .requestMatchers("/api/buses/student-assignment/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL")
+                        .requestMatchers("/api/buses/**").hasAnyRole("ADMIN", "SUPER_ADMIN","PRINCIPAL","STUDENT","DRIVER")
+                        .requestMatchers("/api/admin/buses/**").hasAnyRole("ADMIN", "SUPER_ADMIN","PRINCIPAL", "STUDENT")
+                        .requestMatchers("/api/transport/location/toggle/**", "/api/transport/location/update/**").hasRole("DRIVER")
+                        .requestMatchers("/api/transport/location/all/**").hasAnyRole("ADMIN", "PRINCIPAL")
+                        .requestMatchers("/api/transport/location/student/**").hasRole("STUDENT")
+                        .requestMatchers("/api/superadmin/academic-year/school/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
                         // 3. GENERIC ADMIN PATTERN (for other /api/admin/** endpoints)
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
 
@@ -81,8 +89,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/superadmin/district/**").hasAnyRole("DISTRICT_ADMIN", "STATE_ADMIN", "SUPER_ADMIN")
 
                         // 5. SUPER ADMIN APIs - Generic fallback
+
                         .requestMatchers("/api/superadmin/academic-year/school/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
                         .requestMatchers("/api/superadmin/**").hasAnyRole("SUPER_ADMIN", "DISTRICT_ADMIN", "STATE_ADMIN")
+
+                        .requestMatchers("/api/superadmin/**").hasAnyRole("SUPER_ADMIN", "DISTRICT_ADMIN", "STATE_ADMIN","STUDENT")
+
 
                         // 6. District level access
                         .requestMatchers("/api/district/**").hasAnyRole("DISTRICT_ADMIN", "STATE_ADMIN", "SUPER_ADMIN")
