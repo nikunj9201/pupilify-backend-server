@@ -57,7 +57,8 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public List<Route> getRoutesByBus(Long schoolId, Long busId) {
-        return routeRepository.findBySchoolIdAndBusId(schoolId, busId);
+        // Only return active routes
+        return routeRepository.findBySchoolIdAndBusIdAndActiveTrue(schoolId, busId);
     }
 
     @Override
@@ -66,7 +67,8 @@ public class RouteServiceImpl implements RouteService {
         if (!route.getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Route does not belong to this school");
         }
-        return stoppageRepository.findByRouteId(routeId);
+        // Only return active stoppages
+        return stoppageRepository.findByRouteIdAndActiveTrue(routeId);
     }
 
     @Override
@@ -85,7 +87,9 @@ public class RouteServiceImpl implements RouteService {
         if (!stoppage.getRoute().getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Stoppage does not belong to this school");
         }
-        stoppageRepository.delete(stoppage);
+        // Soft-delete to avoid foreign key constraint violations
+        stoppage.setActive(false);
+        stoppageRepository.save(stoppage);
     }
 
     @Override
@@ -94,6 +98,13 @@ public class RouteServiceImpl implements RouteService {
         if (!route.getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Route does not belong to this school");
         }
-        routeRepository.delete(route);
+        // Soft-delete route and its stoppages to avoid FK constraint violations
+        route.setActive(false);
+        if (route.getStoppages() != null) {
+            for (Stoppage s : route.getStoppages()) {
+                s.setActive(false);
+            }
+        }
+        routeRepository.save(route);
     }
 }

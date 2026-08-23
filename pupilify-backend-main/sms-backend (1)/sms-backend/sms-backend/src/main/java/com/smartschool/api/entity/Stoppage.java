@@ -21,5 +21,7 @@ public class Stoppage {
     @JsonIgnoreProperties("stoppages")
     private Route route;
 
-    private boolean isActive = true;
+    // Soft-delete flag - map to existing DB column if it was previously named `is_active`
+    @Column(name = "is_active")
+    private boolean active = true;
 }

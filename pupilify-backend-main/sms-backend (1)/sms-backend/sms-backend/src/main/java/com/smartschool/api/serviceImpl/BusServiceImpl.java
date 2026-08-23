@@ -66,7 +66,8 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public List<Bus> getBusesBySchool(Long schoolId) {
-        return busRepository.findBySchoolId(schoolId);
+        // return only active buses by default
+        return busRepository.findBySchoolIdAndActiveTrue(schoolId);
     }
 
     @Override
@@ -358,11 +359,35 @@ public class BusServiceImpl implements BusService {
         long driverCount = driverRepository.countByBusId(busId);
         long routeCount = routeRepository.countByBusId(busId);
 
-        if (driverCount > 0 || routeCount > 0) {
-            throw new RuntimeException("Cannot delete bus. It has " + driverCount + " driver(s) and " + routeCount + " route(s) assigned. Please re-assign or delete them first.");
+        // Soft-delete instead of hard delete to avoid FK constraints. Mark bus, its routes and stoppages inactive.
+        bus.setActive(false);
+        busRepository.save(bus);
+
+        // Deactivate routes and their stoppages for this bus
+        java.util.List<Route> routes = routeRepository.findByBusId(busId);
+        if (routes != null) {
+            for (Route r : routes) {
+                r.setActive(false);
+                if (r.getStoppages() != null) {
+                    for (Stoppage s : r.getStoppages()) {
+                        s.setActive(false);
+                    }
+                }
+                routeRepository.save(r);
+            }
         }
 
-        busRepository.delete(bus);
+        // Optionally, if drivers exist, unassign their bus reference instead of failing
+        if (driverCount > 0) {
+            // set bus reference to null for assigned drivers
+            java.util.List<Driver> drivers = driverRepository.findByBusId(busId);
+            if (drivers != null) {
+                for (Driver d : drivers) {
+                    d.setBus(null);
+                    driverRepository.save(d);
+                }
+            }
+        }
     }
 
     @Override
