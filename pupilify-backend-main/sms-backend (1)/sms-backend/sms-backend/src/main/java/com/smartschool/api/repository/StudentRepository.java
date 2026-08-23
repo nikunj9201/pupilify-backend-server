@@ -33,6 +33,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     // 4. Enrollment ID (Unique String ID - Search ke liye)
     Optional<Student> findByEnrollmentIdAndIsActiveTrue(String enrollmentId);
+    Optional<Student> findByEnrollmentIdOrId(String enrollmentId, Long id);
 
     @Query("SELECT MAX(s.enrollmentId) FROM Student s")
     String findLastEnrollmentId();

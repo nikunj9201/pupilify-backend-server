@@ -44,7 +44,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Stoppage addStoppage(Long schoolId, Long routeId, String stopName, double fee) {
+    public Stoppage addStoppage(Long schoolId, Long routeId, String stopName) {
         Route route = routeRepository.findById(routeId).orElseThrow(() -> new RuntimeException("Route not found"));
         if (!route.getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Route does not belong to this school");
@@ -52,13 +52,13 @@ public class RouteServiceImpl implements RouteService {
         Stoppage stoppage = new Stoppage();
         stoppage.setRoute(route);
         stoppage.setStopName(stopName);
-        stoppage.setFee(fee);
         return stoppageRepository.save(stoppage);
     }
 
     @Override
     public List<Route> getRoutesByBus(Long schoolId, Long busId) {
-        return routeRepository.findBySchoolIdAndBusId(schoolId, busId);
+        // Only return active routes
+        return routeRepository.findBySchoolIdAndBusIdAndActiveTrue(schoolId, busId);
     }
 
     @Override
@@ -67,17 +67,17 @@ public class RouteServiceImpl implements RouteService {
         if (!route.getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Route does not belong to this school");
         }
-        return stoppageRepository.findByRouteId(routeId);
+        // Only return active stoppages
+        return stoppageRepository.findByRouteIdAndActiveTrue(routeId);
     }
 
     @Override
-    public Stoppage updateStoppage(Long schoolId, Long stoppageId, String stopName, double fee) {
+    public Stoppage updateStoppage(Long schoolId, Long stoppageId, String stopName) {
         Stoppage stoppage = stoppageRepository.findById(stoppageId).orElseThrow(() -> new RuntimeException("Stoppage not found"));
         if (!stoppage.getRoute().getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Stoppage does not belong to this school");
         }
         stoppage.setStopName(stopName);
-        stoppage.setFee(fee);
         return stoppageRepository.save(stoppage);
     }
 
@@ -87,7 +87,9 @@ public class RouteServiceImpl implements RouteService {
         if (!stoppage.getRoute().getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Stoppage does not belong to this school");
         }
-        stoppageRepository.delete(stoppage);
+        // Soft-delete to avoid foreign key constraint violations
+        stoppage.setActive(false);
+        stoppageRepository.save(stoppage);
     }
 
     @Override
@@ -96,6 +98,13 @@ public class RouteServiceImpl implements RouteService {
         if (!route.getSchool().getId().equals(schoolId)) {
             throw new RuntimeException("Route does not belong to this school");
         }
-        routeRepository.delete(route);
+        // Soft-delete route and its stoppages to avoid FK constraint violations
+        route.setActive(false);
+        if (route.getStoppages() != null) {
+            for (Stoppage s : route.getStoppages()) {
+                s.setActive(false);
+            }
+        }
+        routeRepository.save(route);
     }
 }

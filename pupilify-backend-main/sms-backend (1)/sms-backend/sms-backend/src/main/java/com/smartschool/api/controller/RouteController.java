@@ -23,8 +23,8 @@ public class RouteController {
     }
 
     @PostMapping("/{schoolId}/{routeId}/stoppages/add")
-    public ResponseEntity<Stoppage> addStoppage(@PathVariable Long schoolId, @PathVariable Long routeId, @RequestParam String stopName, @RequestParam double fee) {
-        return ResponseEntity.ok(routeService.addStoppage(schoolId, routeId, stopName, fee));
+    public ResponseEntity<Stoppage> addStoppage(@PathVariable Long schoolId, @PathVariable Long routeId, @RequestParam String stopName) {
+        return ResponseEntity.ok(routeService.addStoppage(schoolId, routeId, stopName));
     }
 
     @GetMapping("/{schoolId}/bus/{busId}")
@@ -38,8 +38,8 @@ public class RouteController {
     }
 
     @PutMapping("/{schoolId}/stoppages/{stoppageId}")
-    public ResponseEntity<Stoppage> updateStoppage(@PathVariable Long schoolId, @PathVariable Long stoppageId, @RequestParam String stopName, @RequestParam double fee) {
-        return ResponseEntity.ok(routeService.updateStoppage(schoolId, stoppageId, stopName, fee));
+    public ResponseEntity<Stoppage> updateStoppage(@PathVariable Long schoolId, @PathVariable Long stoppageId, @RequestParam String stopName) {
+        return ResponseEntity.ok(routeService.updateStoppage(schoolId, stoppageId, stopName));
     }
 
     @DeleteMapping("/{schoolId}/stoppages/{stoppageId}")

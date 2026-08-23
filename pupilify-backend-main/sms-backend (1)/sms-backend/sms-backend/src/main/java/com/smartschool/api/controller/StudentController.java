@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +27,30 @@ public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @GetMapping("/export-excel/{schoolId}")
+    public ResponseEntity<?> exportStudentsToExcel(
+            @PathVariable Long schoolId,
+            @RequestParam(required = false) Long classId,
+            @RequestParam(required = false) Long sectionId,
+            @RequestParam Long academicYearId) {
+        try {
+            List<com.smartschool.api.dto.StudentExcelDTO> students = studentService.getFilteredStudentsForExcel(schoolId, classId, sectionId, academicYearId);
+            if (students.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No students found for the selected criteria.");
+            }
+            byte[] excelData = studentService.generateStudentReportExcel(students);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "students.xlsx");
+
+            return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error exporting students to Excel: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     // ─────────────────────────────────────────────────────────
     // 1. ONBOARDING (All files are optional)

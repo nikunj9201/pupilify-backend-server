@@ -2,11 +2,10 @@ package com.smartschool.api.serviceImpl;
 
 import com.smartschool.api.dto.AcademicYearChangeRequest;
 import com.smartschool.api.dto.AcademicYearStatusResponse;
+import com.smartschool.api.dto.StudentExcelDTO;
 import com.smartschool.api.entity.*;
 import com.smartschool.api.repository.*;
-import com.smartschool.api.service.AcademicYearService;
-import com.smartschool.api.service.EmailService;
-import com.smartschool.api.service.StudentService;
+import com.smartschool.api.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -21,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,6 +40,10 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     @Autowired private StudentFeeDueRepository studentFeeDueRepository;
     @Autowired private StudentService studentService;
     @Autowired private StudentFeeAdjustmentRepository studentFeeAdjustmentRepository;
+    @Autowired private BusFeeService busFeeService;
+    @Autowired private BusFeeStructureRepository busFeeStructureRepository;
+    @Autowired private BusFeePaymentRepository busFeePaymentRepository;
+    @Autowired private BusFeeReportService busFeeReportService;
 
     private final String BACKUP_DIR = "uploads/backups/";
 
@@ -130,13 +134,16 @@ public class AcademicYearServiceImpl implements AcademicYearService {
             byte[] feesExcel       = buildFeesExcel(school.getId(), oldYearId);
             byte[] expensesExcel   = buildExpensesExcel(school.getId(), oldYearId);
             List<Student> students = studentRepository.findBySchoolIdAndIsActiveTrue(schoolId);
-            byte[] studentsExcel   = studentService.generateStudentReportExcel(students);
+            List<StudentExcelDTO> studentDTOs = students.stream().map(StudentExcelDTO::fromEntity).collect(Collectors.toList());
+            byte[] studentsExcel   = studentService.generateStudentReportExcel(studentDTOs);
+            byte[] busFeeDuesExcel = busFeeService.generateBusFeeDueReportExcel(schoolId, oldYearId);
 
             // 2. LAPTOP PE DOWNLOAD KE LIYE SERVER PE SAVE KARO
             saveExcelToLocalFolder(school.getSchoolName(), "Attendance", oldYearStr, attendanceExcel);
             saveExcelToLocalFolder(school.getSchoolName(), "Fees", oldYearStr, feesExcel);
             saveExcelToLocalFolder(school.getSchoolName(), "Expenses", oldYearStr, expensesExcel);
             saveExcelToLocalFolder(school.getSchoolName(), "Students", oldYearStr, studentsExcel);
+            saveExcelToLocalFolder(school.getSchoolName(), "Bus_Fee_Dues", oldYearStr, busFeeDuesExcel);
 
             // 3. EMAIL SENDING
             boolean emailSuccess = false;
@@ -144,10 +151,19 @@ public class AcademicYearServiceImpl implements AcademicYearService {
                 emailService.sendYearEndDataEmail(
                         school, oldYearStr,
                         attendanceExcel, feesExcel,
-                        expensesExcel, studentsExcel);
+                        expensesExcel, studentsExcel, busFeeDuesExcel);
                 emailSuccess = true;
             } catch (Exception mailEx) {
                 log.error("Email fail: {}", mailEx.getMessage());
+            }
+
+            // 3.1 SEND BUS FEES DUE REPORT (NEW FEATURE)
+            try {
+                busFeeReportService.sendBusFeesReportEmail(school.getId(), oldYearId, school.getMailId());
+                log.info("Bus fees due report sent successfully to: {}", school.getMailId());
+            } catch (Exception busMailEx) {
+                log.warn("Bus fees report email failed: {}", busMailEx.getMessage());
+                // Don't fail the entire process if bus fees report fails
             }
 
             // 4. SAVE DUES & MIGRATE STUDENTS
@@ -236,6 +252,8 @@ public class AcademicYearServiceImpl implements AcademicYearService {
     protected void deleteAndMigrateData(Long schoolId, Long oldYearId, AcademicYearConfig newYear) {
         attendanceRepository.deleteBySchoolIdAndAcademicYearId(schoolId, oldYearId);
         feePaymentRepository.deleteBySchoolIdAndAcademicYearId(schoolId, oldYearId);
+        busFeeStructureRepository.deleteBySchoolIdAndAcademicYearId(schoolId, oldYearId);
+        busFeePaymentRepository.deleteBySchoolAndAcademicYear(schoolId, oldYearId);
 
         List<Student> students = studentRepository.findBySchoolIdAndIsActiveTrue(schoolId);
         for (Student s : students) {

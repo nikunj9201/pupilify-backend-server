@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface StudentTransportMappingRepository extends JpaRepository<StudentTransportMapping, Long> {
     Optional<StudentTransportMapping> findByStudentId(Long studentId);
     List<StudentTransportMapping> findAllByRoute_Bus_Id(Long busId);
+    List<StudentTransportMapping> findAllByStoppage_Route_Bus_Id(Long busId);
 }

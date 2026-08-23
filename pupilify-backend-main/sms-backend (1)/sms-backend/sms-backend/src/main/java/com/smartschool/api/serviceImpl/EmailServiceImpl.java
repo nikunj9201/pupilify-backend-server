@@ -23,7 +23,8 @@ public class EmailServiceImpl implements EmailService {
             byte[] attendanceExcel,
             byte[] feesExcel,
             byte[] expensesExcel,
-            byte[] studentsExcel) {
+            byte[] studentsExcel,
+            byte[] busFeeDuesExcel) {
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -39,12 +40,13 @@ public class EmailServiceImpl implements EmailService {
                     <h2>Academic Year %s — Year-End Report</h2>
                     <p>Namaste <b>%s</b>,</p>
                     <p>Academic year change se pehle aapke school ka poora data
-                    neeche 4 Excel files mein attach kiya gaya hai:</p>
+                    neeche 5 Excel files mein attach kiya gaya hai:</p>
                     <ul>
                         <li><b>Attendance_Report.xlsx</b> — Poori saal ki attendance</li>
                         <li><b>Fees_Report.xlsx</b> — Saari fee payments</li>
                         <li><b>Expenses_Report.xlsx</b> — School ke saare kharche</li>
                         <li><b>Students_Report.xlsx</b> — Active students list</li>
+                        <li><b>Bus_Fee_Dues_Report.xlsx</b> — Pending bus fees</li>
                     </ul>
                     <p>Naya academic year: <b>%s</b></p>
                     <br><p>— SmartSchool Team</p>
@@ -54,7 +56,7 @@ public class EmailServiceImpl implements EmailService {
 
             helper.setText(body, true);
 
-            // 4 Excel files attach karo
+            // 5 Excel files attach karo
             helper.addAttachment(
                     "Attendance_Report_" + year + ".xlsx",
                     new ByteArrayResource(attendanceExcel),
@@ -76,6 +78,12 @@ public class EmailServiceImpl implements EmailService {
             helper.addAttachment(
                     "Students_Report_" + year + ".xlsx",
                     new ByteArrayResource(studentsExcel),
+                    "application/vnd.openxmlformats-" +
+                            "officedocument.spreadsheetml.sheet");
+
+            helper.addAttachment(
+                    "Bus_Fee_Dues_Report_" + year + ".xlsx",
+                    new ByteArrayResource(busFeeDuesExcel),
                     "application/vnd.openxmlformats-" +
                             "officedocument.spreadsheetml.sheet");
 

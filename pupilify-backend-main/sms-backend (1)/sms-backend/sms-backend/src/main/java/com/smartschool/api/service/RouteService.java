@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface RouteService {
     Route createRoute(Long schoolId, Long busId, String routeName);
-    Stoppage addStoppage(Long schoolId, Long routeId, String stopName, double fee);
+    Stoppage addStoppage(Long schoolId, Long routeId, String stopName);
     List<Route> getRoutesByBus(Long schoolId, Long busId);
     List<Stoppage> getStoppagesByRoute(Long schoolId, Long routeId);
-    Stoppage updateStoppage(Long schoolId, Long stoppageId, String stopName, double fee);
+    Stoppage updateStoppage(Long schoolId, Long stoppageId, String stopName);
     void deleteStoppage(Long schoolId, Long stoppageId);
     void deleteRoute(Long schoolId, Long routeId);
 }
