@@ -66,6 +66,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/attendance/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // TIMETABLE APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles
                         .requestMatchers("/api/admin/timetable/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
+
+                        // busfees
+                        .requestMatchers("/api/bus-monthly-fees/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
+
+
                         // EXAMS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see exam schedule)
                         .requestMatchers("/api/admin/exams/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "STUDENT", "DEPARTMENT")
                         // RESULTS APIs - Allow ADMIN, PRINCIPAL, TEACHER, STUDENT, and DEPARTMENT roles (students need to see their results)
@@ -81,6 +86,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/transport/location/all/**").hasAnyRole("ADMIN", "PRINCIPAL")
                         .requestMatchers("/api/transport/location/student/**").hasRole("STUDENT")
                         .requestMatchers("/api/superadmin/academic-year/school/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
+                        .requestMatchers("/api/bus-fees/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/bus-fees/student/**").hasAnyRole("STUDENT", "ADMIN", "SUPER_ADMIN")
                         // 3. GENERIC ADMIN PATTERN (for other /api/admin/** endpoints)
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN", "PRINCIPAL", "TEACHER", "DEPARTMENT")
 

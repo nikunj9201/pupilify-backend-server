@@ -102,7 +102,7 @@ public class LocationServiceImpl implements LocationService {
 
     private void checkProximityAndNotify(BusLiveLocation liveLocation) {
         Long busId = liveLocation.getBusId();
-        List<StudentTransportMapping> mappings = mappingRepository.findAllByRoute_Bus_Id(busId);
+        List<StudentTransportMapping> mappings = mappingRepository.findAllByStoppage_Route_Bus_Id(busId);
 
         for (StudentTransportMapping mapping : mappings) {
             RouteStoppage stoppage = mapping.getStoppage();

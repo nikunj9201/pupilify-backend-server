@@ -59,6 +59,11 @@ public class BusController {
         return ResponseEntity.ok(busService.collectBusFee(studentId, academicYearId, amount, paymentMode));
     }
 
+    @PostMapping("/admin/collect-yearly-fee")
+    public ResponseEntity<Map<String, Object>> collectYearlyBusFee(@RequestParam Long studentId, @RequestParam Long academicYearId, @RequestParam double amount, @RequestParam String paymentMode) {
+        return ResponseEntity.ok(busService.collectYearlyBusFee(studentId, academicYearId, amount, paymentMode));
+    }
+
     @GetMapping("/admin/due-report/{schoolId}")
     public ResponseEntity<List<Map<String, Object>>> getBusFeeDueReport(@PathVariable Long schoolId, @RequestParam Long academicYearId) {
         return ResponseEntity.ok(busService.getBusFeeDueReport(schoolId, academicYearId));

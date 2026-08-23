@@ -7,6 +7,7 @@ import java.util.List;
 
 @Repository
 public interface BusRepository extends JpaRepository<Bus, Long> {
+    List<Bus> findBySchoolIdAndActiveTrue(Long schoolId);
     List<Bus> findBySchoolId(Long schoolId);
     boolean existsByRegistrationNo(String registrationNo);
 }

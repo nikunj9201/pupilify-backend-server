@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +49,11 @@ public class BusServiceImpl implements BusService {
     @Autowired
     private RouteRepository routeRepository;
 
+    @Autowired
+    private com.smartschool.api.repository.StudentMonthlyFeeStructureRepository studentMonthlyFeeRepository;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public Bus addBus(Long schoolId, String registrationNo, int capacity) {
         School school = schoolRepository.findById(schoolId).orElseThrow(() -> new RuntimeException("School not found"));
@@ -59,7 +66,8 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public List<Bus> getBusesBySchool(Long schoolId) {
-        return busRepository.findBySchoolId(schoolId);
+        // return only active buses by default
+        return busRepository.findBySchoolIdAndActiveTrue(schoolId);
     }
 
     @Override
@@ -76,7 +84,7 @@ public class BusServiceImpl implements BusService {
         newAssignment.setStudent(student);
         newAssignment.setStoppage(stoppage);
         newAssignment.setAcademicYear(academicYear);
-        newAssignment.setTransportFee(stoppage.getFee());
+        //newAssignment.setTransportFee(stoppage.getFee());
         newAssignment.setActive(true);
 
         return assignmentRepository.save(newAssignment);
@@ -103,15 +111,193 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public TransportFeeLogDTO collectBusFee(Long studentId, Long academicYearId, double amount, String paymentMode) {
-        TransportFeeLog dueLog = feeLogRepository.findFirstByStudentIdAndAcademicYearIdAndStatusOrderByMonthYearAsc(studentId, academicYearId, TransportFeeLog.FeeStatus.DUE)
-                .orElseThrow(() -> new RuntimeException("No due bus fee found for this student"));
+        // First try to find an existing TransportFeeLog with DUE status
+        java.util.Optional<TransportFeeLog> dueOptional = feeLogRepository.findFirstByStudentIdAndAcademicYearIdAndStatusOrderByMonthYearAsc(studentId, academicYearId, TransportFeeLog.FeeStatus.DUE);
+        if (dueOptional.isPresent()) {
+            TransportFeeLog dueLog = dueOptional.get();
+            dueLog.setAmountPaid(amount);
+            dueLog.setPaymentMode(paymentMode);
+            dueLog.setPaymentDate(LocalDate.now());
+            dueLog.setStatus(TransportFeeLog.FeeStatus.PAID);
+            TransportFeeLog savedLog = feeLogRepository.save(dueLog);
+            return TransportFeeLogDTO.fromEntity(savedLog);
+        }
 
-        dueLog.setAmountPaid(amount);
-        dueLog.setPaymentMode(paymentMode);
-        dueLog.setPaymentDate(LocalDate.now());
-        dueLog.setStatus(TransportFeeLog.FeeStatus.PAID);
-        TransportFeeLog savedLog = feeLogRepository.save(dueLog);
-        return TransportFeeLogDTO.fromEntity(savedLog);
+        // Fallback: maybe fees are managed by the newer monthly-fee assignment (StudentMonthlyFeeStructure)
+        // Try to find a monthly assignment and create a paid TransportFeeLog on-the-fly so collection succeeds.
+        java.util.List<StudentMonthlyFeeStructure> assignments = studentMonthlyFeeRepository.findByStudentIdAndAcademicYearIdAndActiveTrue(studentId, academicYearId);
+        if (!assignments.isEmpty()) {
+            StudentMonthlyFeeStructure assignment = assignments.get(0);
+            java.util.List<String> months = new ArrayList<>();
+            try {
+                if (assignment.getSelectedMonths() != null) {
+                    months = objectMapper.readValue(assignment.getSelectedMonths(), new TypeReference<java.util.List<String>>() {});
+                }
+            } catch (Exception e) {
+                // ignore parsing error and proceed with empty months
+            }
+
+            if (months.isEmpty()) {
+                throw new RuntimeException("No due months for this student");
+            }
+
+            int year = assignment.getJoiningYear() > 0 ? assignment.getJoiningYear() : LocalDate.now().getYear();
+            double monthlyFee = assignment.getMonthlyFeeAmount();
+            double remainingAmount = amount;
+            TransportFeeLog lastLog = null;
+
+            // Create payment logs for each month, distributing the payment amount
+            java.util.List<String> paidMonths = new ArrayList<>();
+            for (String month : months) {
+                if (remainingAmount <= 0) break;
+
+                TransportFeeLog newLog = new TransportFeeLog();
+                newLog.setStudent(assignment.getStudent());
+                newLog.setAcademicYear(assignment.getAcademicYear());
+                newLog.setMonthYear(month + " " + year);
+                newLog.setAmountDue(monthlyFee);
+                
+                // Allocate payment: either the remaining amount or the full month's fee
+                double amountForThisMonth = Math.min(remainingAmount, monthlyFee);
+                newLog.setAmountPaid(amountForThisMonth);
+                newLog.setPaymentMode(paymentMode);
+                newLog.setPaymentDate(LocalDate.now());
+                
+                // Determine status based on payment
+                if (amountForThisMonth >= monthlyFee) {
+                    newLog.setStatus(TransportFeeLog.FeeStatus.PAID);
+                    paidMonths.add(month);
+                } else {
+                    newLog.setStatus(TransportFeeLog.FeeStatus.PARTIALLY_PAID);
+                }
+
+                lastLog = feeLogRepository.save(newLog);
+                remainingAmount -= amountForThisMonth;
+            }
+
+            // Update the monthly-fee assignment to remove paid months and recalculate total fee
+            try {
+                java.util.List<String> mutableMonths = new ArrayList<>(months);
+                mutableMonths.removeAll(paidMonths);
+
+                assignment.setSelectedMonths(objectMapper.writeValueAsString(mutableMonths));
+                // Calculate remaining total fee
+                double remainingTotal = mutableMonths.size() * monthlyFee;
+                assignment.setTotalFeeAmount(Math.max(0.0, remainingTotal));
+                if (mutableMonths.isEmpty()) {
+                    assignment.setActive(false);
+                }
+                studentMonthlyFeeRepository.save(assignment);
+            } catch (Exception e) {
+                // if any error occurs updating the assignment, log and continue (do not fail payment)
+                // logging omitted to keep code minimal; in production log the exception
+            }
+
+            return TransportFeeLogDTO.fromEntity(lastLog);
+        }
+
+        throw new RuntimeException("No due bus fee found for this student");
+    }
+
+    @Override
+    public Map<String, Object> collectYearlyBusFee(Long studentId, Long academicYearId, double amount, String paymentMode) {
+        java.util.List<StudentMonthlyFeeStructure> assignments = studentMonthlyFeeRepository.findByStudentIdAndAcademicYearIdAndActiveTrue(studentId, academicYearId);
+        
+        if (assignments.isEmpty()) {
+            throw new RuntimeException("No monthly fee structure found for this student");
+        }
+
+        StudentMonthlyFeeStructure assignment = assignments.get(0);
+        java.util.List<String> months = new ArrayList<>();
+        try {
+            if (assignment.getSelectedMonths() != null) {
+                months = objectMapper.readValue(assignment.getSelectedMonths(), new TypeReference<java.util.List<String>>() {});
+            }
+        } catch (Exception e) {
+            // ignore parsing error
+        }
+
+        if (months.isEmpty()) {
+            throw new RuntimeException("No due months for this student");
+        }
+
+        int year = assignment.getJoiningYear() > 0 ? assignment.getJoiningYear() : LocalDate.now().getYear();
+        double monthlyFee = assignment.getMonthlyFeeAmount();
+        double totalDueAmount = months.size() * monthlyFee;
+        
+        Map<String, Object> paymentSummary = new HashMap<>();
+        paymentSummary.put("studentId", studentId);
+        paymentSummary.put("totalMonthsDue", months.size());
+        paymentSummary.put("monthlyFeeAmount", monthlyFee);
+        paymentSummary.put("totalDueAmount", totalDueAmount);
+        paymentSummary.put("amountPaid", amount);
+        paymentSummary.put("paymentDate", LocalDate.now().toString());
+        paymentSummary.put("paymentMode", paymentMode);
+
+        if (amount < totalDueAmount) {
+            paymentSummary.put("status", "PARTIAL_PAYMENT");
+            paymentSummary.put("remainingDue", totalDueAmount - amount);
+        } else {
+            paymentSummary.put("status", "FULL_PAYMENT");
+            paymentSummary.put("remainingDue", 0.0);
+        }
+
+        java.util.List<Map<String, String>> monthWisePayments = new ArrayList<>();
+        double remainingAmount = amount;
+
+        // Create payment logs for each month
+        java.util.List<String> paidMonths = new ArrayList<>();
+        for (String month : months) {
+            if (remainingAmount <= 0) break;
+
+            Map<String, String> monthPayment = new HashMap<>();
+            monthPayment.put("month", month);
+
+            TransportFeeLog log = new TransportFeeLog();
+            log.setStudent(assignment.getStudent());
+            log.setAcademicYear(assignment.getAcademicYear());
+            log.setMonthYear(month + " " + year);
+            log.setAmountDue(monthlyFee);
+
+            double amountForThisMonth = Math.min(remainingAmount, monthlyFee);
+            log.setAmountPaid(amountForThisMonth);
+            log.setPaymentMode(paymentMode);
+            log.setPaymentDate(LocalDate.now());
+
+            if (amountForThisMonth >= monthlyFee) {
+                log.setStatus(TransportFeeLog.FeeStatus.PAID);
+                monthPayment.put("status", "PAID");
+                paidMonths.add(month);
+            } else {
+                log.setStatus(TransportFeeLog.FeeStatus.PARTIALLY_PAID);
+                monthPayment.put("status", "PARTIALLY_PAID");
+            }
+
+            monthPayment.put("amountPaid", String.valueOf(amountForThisMonth));
+            monthWisePayments.add(monthPayment);
+            feeLogRepository.save(log);
+            remainingAmount -= amountForThisMonth;
+        }
+
+        // Update the monthly-fee assignment
+        try {
+            java.util.List<String> mutableMonths = new ArrayList<>(months);
+            mutableMonths.removeAll(paidMonths);
+
+            assignment.setSelectedMonths(objectMapper.writeValueAsString(mutableMonths));
+            double remainingTotal = mutableMonths.size() * monthlyFee;
+            assignment.setTotalFeeAmount(Math.max(0.0, remainingTotal));
+            if (mutableMonths.isEmpty()) {
+                assignment.setActive(false);
+            }
+            studentMonthlyFeeRepository.save(assignment);
+        } catch (Exception e) {
+            // continue even if update fails
+        }
+
+        paymentSummary.put("monthWisePayments", monthWisePayments);
+        paymentSummary.put("monthsPaid", paidMonths);
+        return paymentSummary;
     }
 
     @Override
@@ -148,7 +334,7 @@ public class BusServiceImpl implements BusService {
 
     @Override
     public List<BusAssignmentDTO> getAssignmentsByRoute(Long routeId) {
-        return assignmentRepository.findByStoppage_Route_Id(routeId).stream()
+        return assignmentRepository.findByStoppage_Route_IdAndActiveTrue(routeId).stream()
                 .map(assignment -> {
                     BusAssignmentDTO dto = new BusAssignmentDTO();
                     dto.setAssignmentId(assignment.getId());
@@ -157,7 +343,7 @@ public class BusServiceImpl implements BusService {
                     dto.setName(assignment.getStudent().getName());
                     dto.setPhoneNo(assignment.getStudent().getPhoneNo());
                     dto.setStopName(assignment.getStoppage().getStopName());
-                    dto.setFee(assignment.getStoppage().getFee());
+                    //dto.setFee(assignment.getStoppage().getFee());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -173,11 +359,35 @@ public class BusServiceImpl implements BusService {
         long driverCount = driverRepository.countByBusId(busId);
         long routeCount = routeRepository.countByBusId(busId);
 
-        if (driverCount > 0 || routeCount > 0) {
-            throw new RuntimeException("Cannot delete bus. It has " + driverCount + " driver(s) and " + routeCount + " route(s) assigned. Please re-assign or delete them first.");
+        // Soft-delete instead of hard delete to avoid FK constraints. Mark bus, its routes and stoppages inactive.
+        bus.setActive(false);
+        busRepository.save(bus);
+
+        // Deactivate routes and their stoppages for this bus
+        java.util.List<Route> routes = routeRepository.findByBusId(busId);
+        if (routes != null) {
+            for (Route r : routes) {
+                r.setActive(false);
+                if (r.getStoppages() != null) {
+                    for (Stoppage s : r.getStoppages()) {
+                        s.setActive(false);
+                    }
+                }
+                routeRepository.save(r);
+            }
         }
 
-        busRepository.delete(bus);
+        // Optionally, if drivers exist, unassign their bus reference instead of failing
+        if (driverCount > 0) {
+            // set bus reference to null for assigned drivers
+            java.util.List<Driver> drivers = driverRepository.findByBusId(busId);
+            if (drivers != null) {
+                for (Driver d : drivers) {
+                    d.setBus(null);
+                    driverRepository.save(d);
+                }
+            }
+        }
     }
 
     @Override
